@@ -1,0 +1,37 @@
+ngx_addon_name=ngx_http_stream_server_traffic_status_module
+have=NGX_STAT_STUB . auto/have
+
+HTTP_STREAM_STS_SRCS=" \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.c      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.c      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.c         \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.c        \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.c      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.c     \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.c     \
+                 "
+
+HTTP_STREAM_STS_DEPS=" \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.h      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.h      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.h         \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.h        \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.h      \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.h     \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.h     \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module_html.h \
+                 "
+if test -n "$ngx_module_link"; then
+    ngx_module_type=HTTP
+    ngx_module_name=$ngx_addon_name
+    ngx_module_srcs="$HTTP_STREAM_STS_SRCS"
+    ngx_module_deps="$HTTP_STREAM_STS_DEPS"
+
+    . auto/module
+else
+    HTTP_MODULES="$HTTP_MODULES $ngx_addon_name"
+    NGX_ADDON_SRCS="$NGX_ADDON_SRCS $HTTP_STREAM_STS_SRCS"
+    NGX_ADDON_DEPS="$NGX_ADDON_DEPS $HTTP_STREAM_STS_DEPS"
+fi
+
+# vi:set ft=sh ts=4 sw=4 et fdm=marker:
