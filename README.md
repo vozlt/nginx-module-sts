@@ -15,47 +15,47 @@ Table of Contents
 * [Synopsis](#synopsis)
 * [Description](#description)
 * [Control](#control)
- * [To get status of traffic zones on the fly](#to-get-status-of-traffic-zones-on-the-fly)
+  * [To get status of traffic zones on the fly](#to-get-status-of-traffic-zones-on-the-fly)
     * [To get fully zones](#to-get-fully-zones)
     * [To get group zones](#to-get-group-zones)
     * [To get each zones](#to-get-each-zones)
- * [To reset traffic zones on the fly](#to-reset-traffic-zones-on-the-fly)
+  * [To reset traffic zones on the fly](#to-reset-traffic-zones-on-the-fly)
     * [To reset fully zones](#to-reset-fully-zones)
     * [To reset group zones](#to-reset-group-zones)
     * [To reset each zones](#to-reset-each-zones)
- * [To delete traffic zones on the fly](#to-delete-traffic-zones-on-the-fly)
+  * [To delete traffic zones on the fly](#to-delete-traffic-zones-on-the-fly)
     * [To delete fully zones](#to-delete-fully-zones)
     * [To delete group zones](#to-delete-group-zones)
     * [To delete each zones](#to-delete-each-zones)
 * [JSON](#json)
- * [Json used by status](#json-used-by-status)
- * [Json used by control](#json-used-by-control)
+  * [Json used by status](#json-used-by-status)
+  * [Json used by control](#json-used-by-control)
 * [Variables](#variables)
 * [Limit](#limit)
- * [To limit traffic for server](#to-limit-traffic-for-server)
- * [To limit traffic for filter](#to-limit-traffic-for-filter)
- * [To limit traffic for upstream](#to-limit-traffic-for-upstream)
+  * [To limit traffic for server](#to-limit-traffic-for-server)
+  * [To limit traffic for filter](#to-limit-traffic-for-filter)
+  * [To limit traffic for upstream](#to-limit-traffic-for-upstream)
 * [Use cases](#use-cases)
- * [To calculate traffic for individual country using GeoIP](#to-calculate-traffic-for-individual-country-using-geoip)
+  * [To calculate traffic for individual country using GeoIP](#to-calculate-traffic-for-individual-country-using-geoip)
 * [Customizing](#customizing)
- * [To customize after the module installed](#to-customize-after-the-module-installed)
- * [To customize before the module installed](#to-customize-before-the-module-installed)
+  * [To customize after the module installed](#to-customize-after-the-module-installed)
+  * [To customize before the module installed](#to-customize-before-the-module-installed)
 * [Directives](#directives)
- * [stream_server_traffic_status](#stream_server_traffic_status)
- * [stream_server_traffic_status_zone](#stream_server_traffic_status_zone)
- * [stream_server_traffic_status_display](#stream_server_traffic_status_display)
- * [stream_server_traffic_status_display_format](#stream_server_traffic_status_display_format)
- * [stream_server_traffic_status_display_jsonp](#stream_server_traffic_status_display_jsonp)
- * [server_traffic_status](#server_traffic_status)
- * [server_traffic_status_zone](#server_traffic_status_zone)
- * [server_traffic_status_filter](#server_traffic_status_filter)
- * [server_traffic_status_filter_by_host](#server_traffic_status_filter_by_host)
- * [server_traffic_status_filter_by_set_key](#server_traffic_status_filter_by_set_key)
- * [server_traffic_status_filter_check_duplicate](#server_traffic_status_filter_check_duplicate)
- * [server_traffic_status_limit](#server_traffic_status_limit)
- * [server_traffic_status_limit_traffic](#server_traffic_status_limit_traffic)
- * [server_traffic_status_limit_traffic_by_set_key](#server_traffic_status_limit_traffic_by_set_key)
- * [server_traffic_status_limit_check_duplicate](#server_traffic_status_limit_check_duplicate)
+  * [stream_server_traffic_status](#stream_server_traffic_status)
+  * [stream_server_traffic_status_zone](#stream_server_traffic_status_zone)
+  * [stream_server_traffic_status_display](#stream_server_traffic_status_display)
+  * [stream_server_traffic_status_display_format](#stream_server_traffic_status_display_format)
+  * [stream_server_traffic_status_display_jsonp](#stream_server_traffic_status_display_jsonp)
+  * [server_traffic_status](#server_traffic_status)
+  * [server_traffic_status_zone](#server_traffic_status_zone)
+  * [server_traffic_status_filter](#server_traffic_status_filter)
+  * [server_traffic_status_filter_by_host](#server_traffic_status_filter_by_host)
+  * [server_traffic_status_filter_by_set_key](#server_traffic_status_filter_by_set_key)
+  * [server_traffic_status_filter_check_duplicate](#server_traffic_status_filter_check_duplicate)
+  * [server_traffic_status_limit](#server_traffic_status_limit)
+  * [server_traffic_status_limit_traffic](#server_traffic_status_limit_traffic)
+  * [server_traffic_status_limit_traffic_by_set_key](#server_traffic_status_limit_traffic_by_set_key)
+  * [server_traffic_status_limit_check_duplicate](#server_traffic_status_limit_check_duplicate)
 * [See Also](#see-also)
 * [TODO](#todo)
 * [Donation](#donation)
@@ -143,13 +143,13 @@ First of all, It is required both the directive `server_traffic_status_zone` in 
 
 * /status/control
 
- * If you request `/status/format/json`, will respond with a JSON document containing the current activity data for using in live dashboards and third-party monitoring tools.
+  * If you request `/status/format/json`, will respond with a JSON document containing the current activity data for using in live dashboards and third-party monitoring tools.
 
- * If you request `/status/format/html`, will respond with the built-in live dashboard in HTML that requests internally to `/status/format/json`.
+  * If you request `/status/format/html`, will respond with the built-in live dashboard in HTML that requests internally to `/status/format/json`.
  
- * If you request `/status/format/jsonp`, will respond with a JSONP callback function containing the current activity data for using in live dashboards and third-party monitoring tools. 
+  * If you request `/status/format/jsonp`, will respond with a JSONP callback function containing the current activity data for using in live dashboards and third-party monitoring tools. 
 
- * If you request `/status/control`, will respond with a JSON document after it reset or delete zones through a query string. See the [Control](#control).
+  * If you request `/status/control`, will respond with a JSON document after it reset or delete zones through a query string. See the [Control](#control).
 
 JSON document contains as follows:
 
@@ -264,33 +264,33 @@ JSON document contains as follows:
 ```
 
 * main
- * Basic version, uptime((nowMsec - loadMsec)/1000)
- * nowMsec, loadMsec is a millisecond.
+  * Basic version, uptime((nowMsec - loadMsec)/1000)
+  * nowMsec, loadMsec is a millisecond.
 * connections
- * Total connections and requests(same as stub_status_module in NGINX)
+  * Total connections and requests(same as stub_status_module in NGINX)
 * streamServerZones
- * Traffic(in/out) and request and response counts and status(1xx,2xx...) hit ratio per each server zone
- * Total traffic(In/Out) and request and response counts(It zone name is `*`) and hit ratio
+  * Traffic(in/out) and request and response counts and status(1xx,2xx...) hit ratio per each server zone
+  * Total traffic(In/Out) and request and response counts(It zone name is `*`) and hit ratio
 * streamFilterZones
- * Traffic(in/out) and request and response counts and status(1xx,2xx...) hit ratio per each server zone filtered through the `server_traffic_status_filter_by_set_key` directive
- * Total traffic(In/Out) and request and response counts(It zone name is `*`) and hit ratio filtered through the `server_traffic_status_filter_by_set_key` directive
+  * Traffic(in/out) and request and response counts and status(1xx,2xx...) hit ratio per each server zone filtered through the `server_traffic_status_filter_by_set_key` directive
+  * Total traffic(In/Out) and request and response counts(It zone name is `*`) and hit ratio filtered through the `server_traffic_status_filter_by_set_key` directive
 * streamUpstreamZones
- * Traffic(in/out) and request and response counts per server in each upstream group
- * Current settings(weight, maxfails, failtimeout...) in nginx.conf
+  * Traffic(in/out) and request and response counts per server in each upstream group
+  * Current settings(weight, maxfails, failtimeout...) in nginx.conf
 
 The directive `stream_server_traffic_status_display_format` sets the default ouput format that is one of json or html. (Default: json)
 
 Traffic calculation as follows:
 
 * streamServerZones
- * in += requested_bytes
- * out += sent_bytes
+  * in += requested_bytes
+  * out += sent_bytes
 * streamFilterZones
- * in += requested_bytes via the filter
- * out += sent_bytes via the filter
+  * in += requested_bytes via the filter
+  * out += sent_bytes via the filter
 * streamUpstreamZones
- * in += requested_bytes via the ServerZones
- * out += sent_bytes via the ServerZones
+  * in += requested_bytes via the ServerZones
+  * out += sent_bytes via the ServerZones
 
 All calculations are working in log processing phase of Nginx.
 
@@ -305,7 +305,7 @@ It is able to reset or delete traffic zones through a query string.
 The request responds with a JSON document.
 
 * URI Syntax
- * /*`{status_uri}`*/control?cmd=*`{command}`*&group=*`{group}`*&zone=*`{name}`*
+  * /*`{status_uri}`*/control?cmd=*`{command}`*&group=*`{group}`*&zone=*`{name}`*
 
 ```Nginx
 http {
@@ -350,54 +350,54 @@ If it set as above, then the control uri is like `example.org/status/control`.
 
 The available request arguments are as follows:
 * **cmd**=\<`status`\|`reset`\|`delete`\>
- * status
-   * It returns status of traffic zones to json format like `status/format/json`.
- * reset
-   * It reset traffic zones without deleting nodes in shared memory.(= init to 0)
- * delete
-   * It delete traffic zones in shared memory. when re-request recreated. 
+  * status
+    * It returns status of traffic zones to json format like `status/format/json`.
+  * reset
+    * It reset traffic zones without deleting nodes in shared memory.(= init to 0)
+  * delete
+    * It delete traffic zones in shared memory. when re-request recreated. 
 * **group**=\<`server`\|`filter`\|`upstream@alone`\|`upstream@group`\|`*`\>
- * server
- * filter
- * upstream@alone
- * upstream@group
- * *
+  * server
+  * filter
+  * upstream@alone
+  * upstream@group
+  * \*
 * **zone**=*name*
- * server
-   * *name*
- * filter
-   * *filter_group*@*name*
- * upstream@group
-   * *upstream_group*@*name*
- * upstream@alone
-   * @*name*
+  * server
+    * *name*
+  * filter
+    * *filter_group*@*name*
+  * upstream@group
+    * *upstream_group*@*name*
+  * upstream@alone
+    * @*name*
 
 ### To get status of traffic zones on the fly
 This is similar to the `status/format/json` except that it can get each zones.
 
 #### To get fully zones
 * It is exactly the same with the `status/format/json`.
- * /status/control?cmd=status&group=*
+  * /status/control?cmd=status&group=*
 
 #### To get group zones
 * streamServerZones
- * /status/control?cmd=status&group=server&zone=*
+  * /status/control?cmd=status&group=server&zone=*
 * streamFilterZones
- * /status/control?cmd=status&group=filter&zone=*
+  * /status/control?cmd=status&group=filter&zone=*
 * streamUpstreamZones
- * /status/control?cmd=status&group=upstream@group&zone=*
+  * /status/control?cmd=status&group=upstream@group&zone=*
 * streamUpstreamZones::nogroups
- * /status/control?cmd=status&group=upstream@alone&zone=*
+  * /status/control?cmd=status&group=upstream@alone&zone=*
 
 #### To get each zones
 * single zone in streamServerZones
- * /status/control?cmd=status&group=server&zone=*`name`*
+  * /status/control?cmd=status&group=server&zone=*`name`*
 * single zone in streamFilterZones
- * /status/control?cmd=status&group=filter&zone=*`filter_group`*@*`name`*
+  * /status/control?cmd=status&group=filter&zone=*`filter_group`*@*`name`*
 * single zone in streamUpstreamZones
- * /status/control?cmd=status&group=upstream@group&zone=*`upstream_group`*@*`name`*
+  * /status/control?cmd=status&group=upstream@group&zone=*`upstream_group`*@*`name`*
 * single zone in streamUpstreamZones::nogroups
- * /status/control?cmd=status&group=upstream@alone&zone=*`name`*
+  * /status/control?cmd=status&group=upstream@alone&zone=*`name`*
 
 ### To reset traffic zones on the fly
 It reset the values of specified zones to 0.
@@ -407,23 +407,23 @@ It reset the values of specified zones to 0.
 
 #### To reset group zones
 * streamServerZones
- * /status/control?cmd=reset&group=server&zone=*
+  * /status/control?cmd=reset&group=server&zone=*
 * streamFilterZones
- * /status/control?cmd=reset&group=filter&zone=*
+  * /status/control?cmd=reset&group=filter&zone=*
 * streamUpstreamZones
- * /status/control?cmd=reset&group=upstream@group&zone=*
+  * /status/control?cmd=reset&group=upstream@group&zone=*
 * streamUpstreamZones::nogroups
- * /status/control?cmd=reset&group=upstream@alone&zone=*
+  * /status/control?cmd=reset&group=upstream@alone&zone=*
 
 #### To reset each zones
 * single zone in streamServerZones
- * /status/control?cmd=reset&group=server&zone=*`name`*
+  * /status/control?cmd=reset&group=server&zone=*`name`*
 * single zone in streamFilterZones
- * /status/control?cmd=reset&group=filter&zone=*`filter_group`*@*`name`*
+  * /status/control?cmd=reset&group=filter&zone=*`filter_group`*@*`name`*
 * single zone in streamUpstreamZones
- * /status/control?cmd=reset&group=upstream@group&zone=*`upstream_group`*@*`name`*
+  * /status/control?cmd=reset&group=upstream@group&zone=*`upstream_group`*@*`name`*
 * single zone in streamUpstreamZones::nogroups
- * /status/control?cmd=reset&group=upstream@alone&zone=*`name`*
+  * /status/control?cmd=reset&group=upstream@alone&zone=*`name`*
 
 ### To delete traffic zones on the fly
 It delete the specified zones in shared memory.
@@ -433,23 +433,23 @@ It delete the specified zones in shared memory.
 
 #### To delete group zones
 * streamServerZones
- * /status/control?cmd=delete&group=server&zone=*
+  * /status/control?cmd=delete&group=server&zone=*
 * streamFilterZones
- * /status/control?cmd=delete&group=filter&zone=*
+  * /status/control?cmd=delete&group=filter&zone=*
 * streamUpstreamZones
- * /status/control?cmd=delete&group=upstream@group&zone=*
+  * /status/control?cmd=delete&group=upstream@group&zone=*
 * streamUpstreamZones::nogroups
- * /status/control?cmd=delete&group=upstream@alone&zone=*
+  * /status/control?cmd=delete&group=upstream@alone&zone=*
 
 #### To delete each zones
 * single zone in streamServerZones
- * /status/control?cmd=delete&group=server&zone=*`name`*
+  * /status/control?cmd=delete&group=server&zone=*`name`*
 * single zone in streamFilterZones
- * /status/control?cmd=delete&group=filter&zone=*`filter_group`*@*`name`*
+  * /status/control?cmd=delete&group=filter&zone=*`filter_group`*@*`name`*
 * single zone in streamUpstreamZones
- * /status/control?cmd=delete&group=upstream@group&zone=*`upstream_group`*@*`name`*
+  * /status/control?cmd=delete&group=upstream@group&zone=*`upstream_group`*@*`name`*
 * single zone in streamUpstreamZones::nogroups
- * /status/control?cmd=delete&group=upstream@alone&zone=*`name`*
+  * /status/control?cmd=delete&group=upstream@alone&zone=*`name`*
 
 ## JSON
 The following status information is provided in the JSON format:
@@ -460,97 +460,97 @@ The following status information is provided in the JSON format:
 /*`{status_uri}`*/control?cmd=status&...
 
 * hostName
- * Host name.
+  * Host name.
 * nginxVersion
- * Version of the provided.
+  * Version of the provided.
 * loadMsec
- * Loaded process time in milliseconds.
+  * Loaded process time in milliseconds.
 * nowMsec
- * Current time in milliseconds
+  * Current time in milliseconds
 * connections
- * active
-   * The current number of active client connections.
- * reading
-   * The total number of reading client connections.
- * writing
-   * The total number of writing client connections.
- * waiting
-   * The total number of wating client connections.
- * accepted
-   * The total number of accepted client connections.
- * handled
-   * The total number of handled client connections.
- * requests
-   * The total number of requested client connections.
+  * active
+    * The current number of active client connections.
+  * reading
+    * The total number of reading client connections.
+  * writing
+    * The total number of writing client connections.
+  * waiting
+    * The total number of wating client connections.
+  * accepted
+    * The total number of accepted client connections.
+  * handled
+    * The total number of handled client connections.
+  * requests
+    * The total number of requested client connections.
 * streamServerZones
- * connectCounter
-   * The total number of client requests received from clients.
- * inBytes
-   * The total number of bytes received from clients.
- * outBytes
-   * The total number of bytes sent to clients.
- * responses
+  * connectCounter
+    * The total number of client requests received from clients.
+  * inBytes
+    * The total number of bytes received from clients.
+  * outBytes
+    * The total number of bytes sent to clients.
+  * responses
     * 1xx, 2xx, 3xx, 4xx, 5xx
       * The number of responses with status codes 1xx, 2xx, 3xx, 4xx, and 5xx.
- * sessionMsec
-   * The average of request processing times in milliseconds.
- * sessionMsecs
+  * sessionMsec
+    * The average of request processing times in milliseconds.
+  * sessionMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
       * The request processing times in milliseconds.
 * streamFilterZones
- * It provides the same fields with `streamServerZones` except that it included group names.
+  * It provides the same fields with `streamServerZones` except that it included group names.
 * streamUpstreamZones
- * server
-   * An address of the server.
- * connectCounter
-   * The total number of client connections forwarded to this server.
- * inBytes
-   * The total number of bytes received from this server.
- * outBytes
-   * The total number of bytes sent to this server.
- * responses
-   * 1xx, 2xx, 3xx, 4xx, 5xx
-     * The number of responses with status codes 1xx, 2xx, 3xx, 4xx, and 5xx.
- * sessionMsec
-   * The average of request processing times including upstream in milliseconds.
- * sessionMsecs
+  * server
+    * An address of the server.
+  * connectCounter
+    * The total number of client connections forwarded to this server.
+  * inBytes
+    * The total number of bytes received from this server.
+  * outBytes
+    * The total number of bytes sent to this server.
+  * responses
+    * 1xx, 2xx, 3xx, 4xx, 5xx
+      * The number of responses with status codes 1xx, 2xx, 3xx, 4xx, and 5xx.
+  * sessionMsec
+    * The average of request processing times including upstream in milliseconds.
+  * sessionMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
       * The request processing times including upstream in milliseconds.
- * uSessionMsec
-   * The average of only upstream response processing times in milliseconds.
- * uSessionMsecs
+  * uSessionMsec
+    * The average of only upstream response processing times in milliseconds.
+  * uSessionMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
       * The only upstream response processing times in milliseconds.
- * uConnectMsec
-   * The average of only upstream times to connect to the upstream server (1.11.4) in milliseconds.
- * uConnectMsecs
+  * uConnectMsec
+    * The average of only upstream times to connect to the upstream server (1.11.4) in milliseconds.
+  * uConnectMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
       * The only upstream response processing times in milliseconds.
- * uFirstByteMsec
-   * The average of only upstream times to receive the first byte of data (1.11.4) in milliseconds.
- * uFirstByteMsecs
+  * uFirstByteMsec
+    * The average of only upstream times to receive the first byte of data (1.11.4) in milliseconds.
+  * uFirstByteMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
       * The only upstream response processing times in milliseconds.
- * weight
-   * Current `weight` setting of the server.
- * maxFails
-   * Current `max_fails` setting of the server.
- * failTimeout
-   * Current `fail_timeout` setting of the server.
- * backup
-   * Current `backup` setting of the server.
- * down
-   * Current `down` setting of the server.
+  * weight
+    * Current `weight` setting of the server.
+  * maxFails
+    * Current `max_fails` setting of the server.
+  * failTimeout
+    * Current `fail_timeout` setting of the server.
+  * backup
+    * Current `backup` setting of the server.
+  * down
+    * Current `down` setting of the server.
 
 ### Json used by control
 /*`{status_uri}`*/control?cmd=reset&...
@@ -558,37 +558,37 @@ The following status information is provided in the JSON format:
 /*`{status_uri}`*/control?cmd=delete&...
 
 * processingReturn
- * The result of true or false.
+  * The result of true or false.
 * processingCommandString
- * The requested command string.
+  * The requested command string.
 * processingGroupString
- * The requested group string.
+  * The requested group string.
 * processingZoneString
- * The requested zone string.
+  * The requested zone string.
 * processingCounts
- * The actual processing number.
+  * The actual processing number.
 
 ## Variables
 The following embedded variables are provided in `stream` block:
 
 * **$sts_connect_counter**
- * The total number of client requests received from clients.
+  * The total number of client requests received from clients.
 * **$sts_in_bytes**
- * The total number of bytes received from clients.
+  * The total number of bytes received from clients.
 * **$sts_out_bytes**
- * The total number of bytes sent to clients.
+  * The total number of bytes sent to clients.
 * **$sts_1xx_counter**
- * The number of responses with status codes 1xx.
+  * The number of responses with status codes 1xx.
 * **$sts_2xx_counter**
- * The number of responses with status codes 2xx.
+  * The number of responses with status codes 2xx.
 * **$sts_3xx_counter**
- * The number of responses with status codes 3xx.
+  * The number of responses with status codes 3xx.
 * **$sts_4xx_counter**
- * The number of responses with status codes 4xx.
+  * The number of responses with status codes 4xx.
 * **$sts_5xx_counter**
- * The number of responses with status codes 5xx.
+  * The number of responses with status codes 5xx.
 * **$sts_session_time**
- * The average of request processing times.
+  * The average of request processing times.
 
 ## Limit
 
@@ -779,22 +779,22 @@ in group name which is second argument of `server_traffic_status_filter_by_set_k
 
 ### stream_server_traffic_status
 
--   | -
---- | ---
-**Syntax**  | **stream_server_traffic_status** \<on\|off\>
-**Default** | off
-**Context** | http, server, location
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status** \<on\|off\> |
+| **Default** | off |
+| **Context** | http, server, location |
 
 `Description:` Enables or disables the module working.
 If you set `stream_server_traffic_status_zone` directive, is automatically enabled.
 
 ### stream_server_traffic_status_zone
 
--   | -
---- | ---
-**Syntax**  | **stream_server_traffic_status_zone** [shared:*name*]
-**Default** | shared:stream_server_traffic_status
-**Context** | http
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status_zone** [shared:*name*] |
+| **Default** | shared:stream_server_traffic_status |
+| **Context** | http |
 
 `Description:` Sets parameters for a shared memory zone specified by `server_traffic_status_zone`
 directive in stream block.
@@ -802,21 +802,21 @@ directive in stream block.
 
 ### stream_server_traffic_status_display
 
--   | -
---- | ---
-**Syntax**  | **stream_server_traffic_status_display**
-**Default** | -
-**Context** | http, server, location
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status_display** |
+| **Default** | - |
+| **Context** | http, server, location |
 
 `Description:` Enables or disables the module display handler.
 
 ### stream_server_traffic_status_display_format
 
--   | -
---- | ---
-**Syntax**  | **stream_server_traffic_status_display_format** \<json\|html\|jsonp\>
-**Default** | json
-**Context** | http, server, location
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status_display_format** \<json\|html\|jsonp\> |
+| **Default** | json |
+| **Context** | http, server, location |
 
 `Description:` Sets the display handler's output format.
 If you set `json`, will respond with a JSON document.
@@ -825,21 +825,21 @@ If you set `jsonp`, will respond with a JSONP callback function(default: *ngx_ht
 
 ### stream_server_traffic_status_display_jsonp
 
--   | -
---- | ---
-**Syntax**  | **stream_server_traffic_status_display_jsonp** *callback*
-**Default** | ngx_http_stream_server_traffic_status_jsonp_callback
-**Context** | http, server, location
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status_display_jsonp** *callback* |
+| **Default** | ngx_http_stream_server_traffic_status_jsonp_callback |
+| **Context** | http, server, location |
 
 `Description:` Sets the callback name for the JSONP.
 
 ### server_traffic_status
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status** \<on\|off\>
-**Default** | off
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status** \<on\|off\> |
+| **Default** | off |
+| **Context** | stream, server |
 
 `Description:` Enables or disables the module working.
 If you set `server_traffic_status_zone` directive, is automatically enabled.
@@ -847,11 +847,11 @@ If you set `server_traffic_status_zone` directive, is automatically enabled.
 
 ### server_traffic_status_zone
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_zone** [shared:*name:size*]
-**Default** | shared:stream_server_traffic_status:1m
-**Context** | stream
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_zone** [shared:*name:size*] |
+| **Default** | shared:stream_server_traffic_status:1m |
+| **Context** | stream |
 
 `Description:` Sets parameters for a shared memory zone that will keep states for various keys.
 The cache is shared between all worker processes.
@@ -859,21 +859,21 @@ The cache is shared between all worker processes.
 
 ### server_traffic_status_filter
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_filter** \<on\|off\>
-**Default** | on
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_filter** \<on\|off\> |
+| **Default** | on |
+| **Context** | stream, server |
 
 `Description:` Enables or disables the filter features.
 
 ### server_traffic_status_filter_by_set_key
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_filter_by_set_key** *key* [*name*]
-**Default** | -
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_filter_by_set_key** *key* [*name*] |
+| **Default** | - |
+| **Context** | stream, server |
 
 `Description:` Enables the keys by user defined variable.
 The *key* is a key string to calculate traffic.
@@ -938,32 +938,32 @@ stream {
 
 ### server_traffic_status_filter_check_duplicate
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_filter_check_duplicate** \<on\|off\>
-**Default** | on
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_filter_check_duplicate** \<on\|off\> |
+| **Default** | on |
+| **Context** | stream, server |
 
 `Description:` Enables or disables the deduplication of server_traffic_status_filter_by_set_key.
 It is processed only one of duplicate values(`key` + `name`) in each directives(stream, server) if this option is enabled.
 
 ### server_traffic_status_limit
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_limit** \<on\|off\>
-**Default** | on
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_limit** \<on\|off\> |
+| **Default** | on |
+| **Context** | stream, server |
 
 `Description:` Enables or disables the limit features.
 
 ### server_traffic_status_limit_traffic
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_limit_traffic** *member*:*size* [*code*]
-**Default** | -
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_limit_traffic** *member*:*size* [*code*] |
+| **Default** | - |
+| **Context** | stream, server |
 
 `Description:` Enables the traffic limit for specified *member*.
 The *member* is a member string to limit traffic.
@@ -972,29 +972,29 @@ The *code* is a code to return in response to rejected requests.(Default: 503)
 
 The available *`member`* strings are as follows:
 * **connect**
- * The total number of client connects received from clients.
+  * The total number of client connects received from clients.
 * **in**
- * The total number of bytes received from clients.
+  * The total number of bytes received from clients.
 * **out**
- * The total number of bytes sent to clients.
+  * The total number of bytes sent to clients.
 * **1xx**
- * The number of responses with status codes 1xx.
+  * The number of responses with status codes 1xx.
 * **2xx**
- * The number of responses with status codes 2xx.
+  * The number of responses with status codes 2xx.
 * **3xx**
- * The number of responses with status codes 3xx.
+  * The number of responses with status codes 3xx.
 * **4xx**
- * The number of responses with status codes 4xx.
+  * The number of responses with status codes 4xx.
 * **5xx**
- * The number of responses with status codes 5xx.
+  * The number of responses with status codes 5xx.
 
 ### server_traffic_status_limit_traffic_by_set_key
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_limit_traffic_by_set_key** *key* *member*:*size* [*code*]
-**Default** | -
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_limit_traffic_by_set_key** *key* *member*:*size* [*code*] |
+| **Default** | - |
+| **Context** | stream, server |
 
 `Description:` Enables the traffic limit for specified *key* and *member*.
 The *key* is a key string to limit traffic.
@@ -1008,41 +1008,41 @@ The *`key`* syntax is as follows:
 
 The available *`group`* strings are as follows:
 * **NO**
- * The group of server.
+  * The group of server.
 * **UA**
- * The group of upstream alone.
+  * The group of upstream alone.
 * **UG**
- * The group of upstream group.(use *`subgroup`*)
+  * The group of upstream group.(use *`subgroup`*)
 * **FG**
- * The group of filter.(use *`subgroup`*)
+  * The group of filter.(use *`subgroup`*)
 
 The available *`member`* strings are as follows:
 * **connect**
- * The total number of client requests received from clients.
+  * The total number of client requests received from clients.
 * **in**
- * The total number of bytes received from clients.
+  * The total number of bytes received from clients.
 * **out**
- * The total number of bytes sent to clients.
+  * The total number of bytes sent to clients.
 * **1xx**
- * The number of responses with status codes 1xx.
+  * The number of responses with status codes 1xx.
 * **2xx**
- * The number of responses with status codes 2xx.
+  * The number of responses with status codes 2xx.
 * **3xx**
- * The number of responses with status codes 3xx.
+  * The number of responses with status codes 3xx.
 * **4xx**
- * The number of responses with status codes 4xx.
+  * The number of responses with status codes 4xx.
 * **5xx**
- * The number of responses with status codes 5xx.
+  * The number of responses with status codes 5xx.
 
 The *member* is the same as `server_traffic_status_limit_traffic` directive.
 
 ### server_traffic_status_limit_check_duplicate
 
--   | -
---- | ---
-**Syntax**  | **server_traffic_status_limit_check_duplicate** \<on\|off\>
-**Default** | on
-**Context** | stream, server
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_limit_check_duplicate** \<on\|off\> |
+| **Default** | on |
+| **Context** | stream, server |
 
 `Description:` Enables or disables the deduplication of server_traffic_status_limit_by_set_key.
 It is processed only one of duplicate values(`member` | `key` + `member`)
