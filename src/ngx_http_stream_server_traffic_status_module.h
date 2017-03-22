@@ -13,7 +13,6 @@
 #include <ngx_http.h>
 #include <ngx_stream.h>
 
-#include "ngx_http_stream_server_traffic_status_module_html.h"
 #include "ngx_http_stream_server_traffic_status_string.h"
 #include "ngx_http_stream_server_traffic_status_shm.h"
 #include "ngx_http_stream_server_traffic_status_node.h"

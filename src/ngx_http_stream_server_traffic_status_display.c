@@ -4,6 +4,7 @@
  */
 
 
+#include "ngx_http_stream_server_traffic_status_module_html.h"
 #include "ngx_http_stream_server_traffic_status_module.h"
 #include "ngx_http_stream_server_traffic_status_filter.h"
 #include "ngx_http_stream_server_traffic_status_display.h"

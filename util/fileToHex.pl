@@ -67,25 +67,55 @@ sub DESTROY {
 package main;
 
 if ($#ARGV < 0) {
-    print "Usage: $0 {path} {max}\n";
+    print "Usage: $0 {path} {max} {type}\n";
     exit(2);
 }
 
 my $path = $ARGV[0];
 my $max = $ARGV[1] || 16;
-my $fth = FileToHex->new(path => $path);
-$fth->fileOpen();
+my $type = $ARGV[2] || "buffer";
+my $plus = "";
 my $buf = "";
 my $i = 0;
-while($fth->fileReadByte(my $c)) {
-    $i++;
-    $buf .= '\x' . unpack("H2", $c);
+my $fth = FileToHex->new(path => $path);
+
+$fth->fileOpen();
+if ($type eq "define") {
+    # type: define
+    while($fth->fileReadByte(my $c)) {
+        $i++;
+        $buf .= '\x' . unpack("H2", $c);
+        if (!($i % $max)) {
+            $plus .= "\"$buf\" \\\n";
+            $buf = "";
+        }
+    }
+
     if (!($i % $max)) {
-        print "\"$buf\" \\\n";
-        $buf = "";
+        print substr($plus, 0, -3) . "\n";
+
+    } else {
+        print $plus . "\"$buf\"\n";
+    }
+
+} else {
+    # type: buffer
+    while($fth->fileReadByte(my $c)) {
+        $i++;
+        $buf .= '0x' . unpack("H2", $c) . ', ';
+        if (!($i % $max)) {
+            $plus .= "$buf\n";
+            $buf = "";
+        }
+    }
+
+    if (!($i % $max)) {
+        print substr($plus, 0, -3) . "\n";
+
+    } else {
+        print $plus . substr($buf, 0, -2) . "\n";
     }
 }
-print "\"$buf\"\n" if (length($buf));
 $fth->fileClose();
 
 # vi:set ft=perl ts=4 sw=4 et fdm=marker:
