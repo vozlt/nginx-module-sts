@@ -3,6 +3,7 @@
  * Copyright (C) YoungJoo Kim (vozlt)
  */
 
+#include <ngx_config.h>
 #include <ngx_core.h>
 
 #include "ngx_http_stream_server_traffic_status_string.h"
