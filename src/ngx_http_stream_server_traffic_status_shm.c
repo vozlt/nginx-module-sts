@@ -4,6 +4,8 @@
  */
 
 
+#include <ngx_config.h>
+
 #include "ngx_http_stream_server_traffic_status_module.h"
 #include "ngx_http_stream_server_traffic_status_shm.h"
 
