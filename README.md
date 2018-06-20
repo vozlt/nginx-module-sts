@@ -49,7 +49,6 @@ Table of Contents
   * [server_traffic_status](#server_traffic_status)
   * [server_traffic_status_zone](#server_traffic_status_zone)
   * [server_traffic_status_filter](#server_traffic_status_filter)
-  * [server_traffic_status_filter_by_host](#server_traffic_status_filter_by_host)
   * [server_traffic_status_filter_by_set_key](#server_traffic_status_filter_by_set_key)
   * [server_traffic_status_filter_check_duplicate](#server_traffic_status_filter_check_duplicate)
   * [server_traffic_status_limit](#server_traffic_status_limit)
