@@ -234,6 +234,8 @@ typedef struct {
 } ngx_http_stream_server_traffic_status_loc_conf_t;
 
 
+ngx_msec_t ngx_http_stream_server_traffic_status_current_msec(void);
+
 extern ngx_module_t ngx_http_stream_server_traffic_status_module;
 
 

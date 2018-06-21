@@ -177,7 +177,7 @@ ngx_http_stream_server_traffic_status_create_loc_conf(ngx_conf_t *cf)
         return NULL;
     }
 
-    conf->start_msec = ngx_current_msec;
+    conf->start_msec = ngx_http_stream_server_traffic_status_current_msec();
     conf->enable = NGX_CONF_UNSET;
     conf->shm_zone = NGX_CONF_UNSET_PTR;
     conf->format = NGX_CONF_UNSET;
@@ -220,6 +220,22 @@ ngx_http_stream_server_traffic_status_merge_loc_conf(ngx_conf_t *cf, void *paren
     conf->shm_name = ctx->shm_name;
 
     return NGX_CONF_OK;
+}
+
+
+ngx_msec_t
+ngx_http_stream_server_traffic_status_current_msec(void)
+{
+    time_t           sec;
+    ngx_uint_t       msec;
+    struct timeval   tv;
+
+    ngx_gettimeofday(&tv);
+
+    sec = tv.tv_sec;
+    msec = tv.tv_usec / 1000;
+
+    return (ngx_msec_t) sec * 1000 + msec;
 }
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

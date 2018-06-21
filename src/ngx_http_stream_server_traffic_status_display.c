@@ -492,7 +492,8 @@ ngx_http_stream_server_traffic_status_display_set_main(ngx_http_request_t *r,
 
     buf = ngx_sprintf(buf, NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_JSON_FMT_MAIN,
                       &ngx_cycle->hostname, NGINX_VERSION, stscf->start_msec,
-                      ngx_current_msec, ac, rd, wr, wa, ap, hn, rq);
+                      ngx_http_stream_server_traffic_status_current_msec(),
+                      ac, rd, wr, wa, ap, hn, rq);
 
     return buf;
 }
