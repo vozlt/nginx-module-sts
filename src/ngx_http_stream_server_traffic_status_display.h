@@ -19,6 +19,17 @@ u_char *ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(
     ngx_http_request_t *r,
     ngx_http_stream_server_traffic_status_node_time_queue_t *q);
 
+u_char *ngx_http_stream_server_traffic_status_display_get_histogram_bucket(
+    ngx_http_request_t *r,
+    ngx_http_stream_server_traffic_status_node_histogram_bucket_t *b,
+    ngx_uint_t offset, const char *fmt);
+u_char *ngx_http_stream_server_traffic_status_display_get_histogram_bucket_msecs(
+    ngx_http_request_t *r,
+    ngx_http_stream_server_traffic_status_node_histogram_bucket_t *b);
+u_char *ngx_http_stream_server_traffic_status_display_get_histogram_bucket_counters(
+    ngx_http_request_t *r,
+    ngx_http_stream_server_traffic_status_node_histogram_bucket_t *q);
+
 u_char *ngx_http_stream_server_traffic_status_display_set_main(
     ngx_http_request_t *r, u_char *buf);
 u_char *ngx_http_stream_server_traffic_status_display_set_server_node(
