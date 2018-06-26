@@ -379,7 +379,15 @@
         </div>
 
         <script>
+            String.prototype.format = function () {
+                var i = 0, args = arguments;
+                return this.replace(/{}/g, function () {
+                    return typeof args[i] != 'undefined' ? args[i++] : '';
+                });
+            };
+
             var vtsStatusURI = "{{uri}}/format/json", vtsUpdateInterval = 1000, vtsUpdate;
+
             var vtsStatusVars = {
                 titles: {
                     main:"Server main",
@@ -470,7 +478,11 @@
                     return (b / (kb * kb)).toFixed(1) + ' MiB';
                 }
 
-                return (b / (kb * kb * kb)).toFixed(2) + ' GiB';
+                if (b < (kb * kb * kb * kb)) {
+                    return (b / (kb * kb * kb)).toFixed(2) + ' GiB';
+                }
+
+                return (b / (kb * kb * kb * kb)).toFixed(6) + ' TiB';
             }
 
             function sTh(b,d) {
@@ -490,143 +502,132 @@
                 return '<' + t + '>' + (v) + '</' + ts[0] + '>';
             }
 
+            function aHe(t, v) {
+                var i;
+                var o = '';
+                if (Object.prototype.toString.call(v) === '[object Array]') {
+                    for (i = 0; i < v.length; i++)  {
+                        o += sHe(t, v[i]);
+                    }
+                } else {
+                    o = sHe(t, v);
+                }
+                return o;
+            }
+
             function templateServerHeader() {
                 var heads = [];
-                heads[0] = sHe('th rowspan="2"', 'Zone');
-                heads[0] += sHe('th rowspan="2"', 'Port');
-                heads[0] += sHe('th rowspan="2"', 'Protocol');
-                heads[0] += sHe('th colspan="3"', 'Requests');
-                heads[0] += sHe('th colspan="6"', 'Responses');
-                heads[0] += sHe('th colspan="4"', 'Traffic');
 
-                heads[1] = sHe('th', 'Total');
-                heads[1] += sHe('th', 'Req/s');
-                heads[1] += sHe('th', 'Time');
-                heads[1] += sHe('th', '1xx');
-                heads[1] += sHe('th', '2xx');
-                heads[1] += sHe('th', '3xx');
-                heads[1] += sHe('th', '4xx');
-                heads[1] += sHe('th', '5xx');
-                heads[1] += sHe('th', 'Total');
-                heads[1] += sHe('th', 'Sent');
-                heads[1] += sHe('th', 'Rcvd');
-                heads[1] += sHe('th', 'Sent/s');
-                heads[1] += sHe('th', 'Rcvd/s');
+                heads[0] = '{}{}{}{}{}{}'.format(aHe('th rowspan="2"', 'Zone'),
+                                             aHe('th rowspan="2"', 'Port'),
+                                             aHe('th rowspan="2"', 'Protocol'),
+                                             aHe('th colspan="3"', 'Requests'),
+                                             aHe('th colspan="6"', 'Responses'),
+                                             aHe('th colspan="4"', 'Traffic'));
 
-                return sHe('thead', sHe('tr', heads[0]) + sHe('tr', heads[1]));
+
+                heads[1] = aHe('th', ['Total', 'Req/s', 'Time', '1xx', '2xx', '3xx', '4xx', '5xx',
+                                      'Total', 'Sent', 'Rcvd', 'Sent/s', 'Rcvd/s']);
+
+                return aHe('thead', '{}{}'.format(aHe('tr', heads[0]), aHe('tr', heads[1])));
             }
 
             function templateUpstreamHeader() {
                 var heads = [];
-                heads[0] = sHe('th rowspan="2"', 'Server');
-                heads[0] += sHe('th rowspan="2"', 'State');
-                heads[0] += sHe('th colspan="3"', 'Response Time');
-                heads[0] += sHe('th rowspan="2"', 'Weight');
-                heads[0] += sHe('th rowspan="2"', 'MaxFails');
-                heads[0] += sHe('th rowspan="2"', 'FailTimeout');
-                heads[0] += sHe('th colspan="3"', 'Requests');
-                heads[0] += sHe('th colspan="6"', 'Responses');
-                heads[0] += sHe('th colspan="4"', 'Traffic');
 
-                heads[1] = sHe('th', 'Connect');
-                heads[1] += sHe('th', 'FirstByte');
-                heads[1] += sHe('th', 'Response');
-                heads[1] += sHe('th', 'Total');
-                heads[1] += sHe('th', 'Req/s');
-                heads[1] += sHe('th', 'Time');
-                heads[1] += sHe('th', '1xx');
-                heads[1] += sHe('th', '2xx');
-                heads[1] += sHe('th', '3xx');
-                heads[1] += sHe('th', '4xx');
-                heads[1] += sHe('th', '5xx');
-                heads[1] += sHe('th', 'Total');
-                heads[1] += sHe('th', 'Sent');
-                heads[1] += sHe('th', 'Rcvd');
-                heads[1] += sHe('th', 'Sent/s');
-                heads[1] += sHe('th', 'Rcvd/s');
+                heads[0] = '{}{}{}{}{}{}{}{}{}'.format(aHe('th rowspan="2"', 'Server'),
+                                                       aHe('th rowspan="2"', 'State'),
+                                                       aHe('th colspan="3"', 'Response Time'),
+                                                       aHe('th rowspan="2"', 'Weight'),
+                                                       aHe('th rowspan="2"', 'MaxFails'),
+                                                       aHe('th rowspan="2"', 'FailTimeout'),
+                                                       aHe('th colspan="3"', 'Requests'),
+                                                       aHe('th colspan="6"', 'Responses'),
+                                                       aHe('th colspan="4"', 'Traffic'));
 
-                return sHe('thead', sHe('tr', heads[0]) + sHe('tr', heads[1]));
+                heads[1] = aHe('th', ['Connect', 'FirstByte', 'Response', 'Total', 'Req/s',
+                                      'Time', '1xx', '2xx', '3xx', '4xx', '5xx',
+                                      'Total', 'Sent', 'Rcvd', 'Sent/s', 'Rcvd/s']);
+
+                return aHe('thead', '{}{}'.format(aHe('tr', heads[0]), aHe('tr', heads[1])));
             }
 
             function templateMainZone(it) {
-                var out = '';
+                var o = '';
                 var head = '';
                 var body = '';
                 var heads = [];
                 var bodys = [];
 
-                heads[0] = sHe('th rowspan="2"', 'Host');
-                heads[0] += sHe('th rowspan="2"', 'Version');
-                heads[0] += sHe('th rowspan="2"', 'Uptime');
-                heads[0] += sHe('th colspan="4"', 'Connections');
-                heads[0] += sHe('th colspan="5"', 'Requests');
+                heads[0] = '{}{}{}{}{}{}'.format(aHe('th rowspan="2"', 'Host'),
+                                               aHe('th rowspan="2"', 'Version'),
+                                               aHe('th rowspan="2"', 'Uptime'),
+                                               aHe('th colspan="4"', 'Connections'),
+                                               aHe('th colspan="4"', 'Requests'),
+                                               aHe('th colspan="4"', 'Shared memory'));
 
-                heads[1] = sHe('th', 'active');
-                heads[1] += sHe('th', 'reading');
-                heads[1] += sHe('th', 'writing');
-                heads[1] += sHe('th', 'waiting');
-                heads[1] += sHe('th', 'accepted');
-                heads[1] += sHe('th', 'handled');
-                heads[1] += sHe('th', 'Total');
-                heads[1] += sHe('th', 'Req/s');
+                heads[1] = aHe('th', ['active', 'reading', 'writing', 'waiting', 'accepted',
+                                      'handled', 'Total', 'Req/s', 'name', 'maxSize', 'usedSize', 'usedNode']);
 
-                head = sHe('thead', sHe('tr', heads[0]) + sHe('tr', heads[1]));
+                head = aHe('thead', '{}{}'.format(aHe('tr', heads[0]), aHe('tr', heads[1])));
 
-                bodys[0] = sHe('td', it.hostName);
-                bodys[0] += sHe('td', it.nginxVersion);
-                bodys[0] += sHe('td', mTh(it.nowMsec - it.loadMsec));
-                bodys[0] += sHe('td', it.connections.active);
-                bodys[0] += sHe('td', it.connections.reading);
-                bodys[0] += sHe('td', it.connections.writing);
-                bodys[0] += sHe('td', it.connections.waiting);
-                bodys[0] += sHe('td', it.connections.accepted);
-                bodys[0] += sHe('td', it.connections.handled);
-                bodys[0] += sHe('td', it.connections.requests);
-                bodys[0] += sHe('td', aPs.getValue('main.connections.requests', it.connections.requests));
+                bodys[0] = aHe('td', [ aHe('strong', it.hostName), it.nginxVersion, mTh(it.nowMsec - it.loadMsec),
+                                      it.connections.active, it.connections.reading, it.connections.writing,
+                                      it.connections.waiting, it.connections.accepted, it.connections.handled,
+                                      it.connections.requests, aPs.getValue('main.connections.requests', it.connections.requests),
+                                      aHe('strong', it.sharedZones.name), bTh(it.sharedZones.maxSize), bTh(it.sharedZones.usedSize),
+                                      it.sharedZones.usedNode]);
 
-                body = sHe('tbody', sHe('tr', bodys[0]));
+                body = aHe('tbody', aHe('tr', bodys[0]));
 
-                out = sHe('h2', vtsStatusVars.titles.main) + sHe('table', head + body);
-                out = sHe('div id="main"', out);
+                o = '{}{}'.format(aHe('h2', vtsStatusVars.titles.main), aHe('table', '{}{}'.format(head, body)));
+                o = aHe('div id="{}"'.format(vtsStatusVars.ids.main), o);
 
-                return out;
+                return o;
             }
 
             function templateServerZone(filter, group, id) {
                 var n = 0;
                 var s = '';
                 var o = '';
+
                 for(var name in filter) {
                     var zone = filter[name];
-                    var uniq = id + '.' + group + '.' + name;
+                    var uniq = '{}.{}.{}'.format(id, group, name);
                     var clas = '';
                     var flag = '';
                     var responseCount = 0;
                     var responseTotal = 0;
 
-                    clas = ((n++ % 2) ? 'class="odd"' : '');
-                    flag = (group.indexOf("country") != -1 && name.length == 2) ? '<img class="flag flag-' + name.toLowerCase() + '" />' : '';
+                    clas = (n++ % 2) ? 'odd' : '';
+                    flag = (group.indexOf("country") != -1 && name.length == 2)
+                           ? '<img class="flag flag-{}" />'.format(name.toLowerCase())
+                           : '';
 
-                    s = sHe('th', flag + name);
-                    s += sHe('th', zone.port);
-                    s += sHe('th', zone.protocol);
-                    s += sHe('td', (zone.connectCounter + zone.overCounts['maxIntegerSize'] * zone.overCounts['connectCounter']));
-                    s += sHe('td', (aPs.getValue(uniq + '.connectCounter', zone.connectCounter)));
-                    s += sHe('td', mTh(zone.sessionMsec));
+                    s = '{}{}'.format(aHe('th', '{}{}'.format(flag, name)),
+                                      aHe('td', [zone.port, zone.protocol,
+                                                 (zone.connectCounter + zone.overCounts['maxIntegerSize'] * zone.overCounts['connectCounter']),
+                                                 (aPs.getValue(uniq + '.connectCounter', zone.connectCounter)),
+                                                 mTh(zone.sessionMsec)
+                                                ]));
 
                     for(var code in zone.responses) {
-                        responseCount = (zone.responses[code] + zone.overCounts['maxIntegerSize'] * zone.overCounts[code]);
+                        responseCount = zone.responses[code] + zone.overCounts['maxIntegerSize'] * zone.overCounts[code];
                         responseTotal += responseCount;
-                        s += sHe('td', responseCount);
+                        s = '{}{}'.format(s, aHe('td', responseCount));
                     }
 
-                    s += sHe('td', responseTotal);
-                    s += sHe('td', (bTh(zone.outBytes + zone.overCounts['maxIntegerSize'] * zone.overCounts['outBytes'])));
-                    s += sHe('td', (bTh(zone.inBytes + zone.overCounts['maxIntegerSize'] * zone.overCounts['inBytes'])));
-                    s += sHe('td', (bTh(aPs.getValue(uniq + '.outBytes', zone.outBytes))));
-                    s += sHe('td', (bTh(aPs.getValue(uniq + '.inBytes', zone.inBytes))));
-                    o += sHe('tr ' + clas, s);
+                    s = '{}{}'.format(s, aHe('td', [responseTotal,
+                                                    bTh(zone.outBytes + zone.overCounts['maxIntegerSize'] * zone.overCounts['outBytes']),
+                                                    bTh(zone.inBytes + zone.overCounts['maxIntegerSize'] * zone.overCounts['inBytes']),
+                                                    bTh(aPs.getValue('{}.{}'.format(uniq, 'outBytes'), zone.outBytes)),
+                                                    bTh(aPs.getValue('{}.{}'.format(uniq, 'inBytes'), zone.inBytes))
+                                                   ]));
+
+
+                    o = '{}{}'.format(o, aHe('tr class="{}"'.format(clas), s));
                 }
+
                 return o;
             }
 
@@ -637,38 +638,38 @@
 
                 while (n < filter.length) {
                     var peer = filter[n];
-                    var uniq = id + '.' + group + '.' + peer.server;
+                    var uniq = '{}.{}.{}'.format(id, group, peer.server);
                     var clas = '';
                     var responseCount = 0;
                     var responseTotal = 0;
 
-                    clas = ((n++ % 2) ? 'class="odd"' : '');
+                    clas = (n++ % 2) ? 'odd' : '';
 
-                    s = sHe('th', peer.server);
-                    s += sHe('th', sTh(peer.backup, peer.down));
-                    s += sHe('th', mTh(peer.uConnectMsec));
-                    s += sHe('th', mTh(peer.uFirstByteMsec));
-                    s += sHe('th', mTh(peer.uSessionMsec));
-                    s += sHe('th', peer.weight);
-                    s += sHe('th', peer.maxFails);
-                    s += sHe('th', peer.failTimeout);
-                    s += sHe('th', (peer.connectCounter + peer.overCounts['maxIntegerSize'] * peer.overCounts['connectCounter']));
-                    s += sHe('th', (aPs.getValue(uniq + '.connectCounter', peer.connectCounter)));
-                    s += sHe('th', mTh(peer.sessionMsec));
+                    s = '{}{}'.format(aHe('th', peer.server),
+                                      aHe('td', [sTh(peer.backup, peer.down), mTh(peer.uConnectMsec),
+                                                 mTh(peer.uFirstByteMsec), mTh(peer.uSessionMsec),
+                                                 peer.weight, peer.maxFails, peer.failTimeout,
+                                                 (peer.connectCounter + peer.overCounts['maxIntegerSize'] * peer.overCounts['connectCounter']),
+                                                 aPs.getValue(uniq + '.connectCounter', peer.connectCounter),
+                                                 mTh(peer.sessionMsec)
+                                                ]));
 
                     for(var code in peer.responses) {
-                        responseCount = (peer.responses[code] + peer.overCounts['maxIntegerSize'] * peer.overCounts[code]);
+                        responseCount = peer.responses[code] + peer.overCounts['maxIntegerSize'] * peer.overCounts[code];
                         responseTotal += responseCount;
-                        s += sHe('td', responseCount);
+                        s = '{}{}'.format(s, aHe('td', responseCount));
                     }
 
-                    s += sHe('td', responseTotal);
-                    s += sHe('td', (bTh(peer.outBytes + peer.overCounts['maxIntegerSize'] * peer.overCounts['outBytes'])));
-                    s += sHe('td', (bTh(peer.inBytes + peer.overCounts['maxIntegerSize'] * peer.overCounts['inBytes'])));
-                    s += sHe('td', (bTh(aPs.getValue(uniq + '.outBytes', peer.outBytes))));
-                    s += sHe('td', (bTh(aPs.getValue(uniq + '.inBytes', peer.inBytes))));
-                    o += sHe('tr ' + clas, s);
+                    s = '{}{}'.format(s, aHe('td', [responseTotal,
+                                                    bTh(peer.outBytes + peer.overCounts['maxIntegerSize'] * peer.overCounts['outBytes']),
+                                                    bTh(peer.inBytes + peer.overCounts['maxIntegerSize'] * peer.overCounts['inBytes']),
+                                                    bTh(aPs.getValue('{}.{}'.format(uniq, 'outBytes'), peer.outBytes)),
+                                                    bTh(aPs.getValue('{}.{}'.format(uniq, 'inBytes'), peer.inBytes))
+                                                   ]));
+
+                    o = '{}{}'.format(o, aHe('tr class="{}"'.format(clas), s));
                 }
+
                 return o;
             }
 
@@ -680,40 +681,45 @@
                 var head = '';
                 var body = '';
                 var bodys = [];
+                var cache = true;
 
                 /* main */
                 out = templateMainZone(it);
 
-                /* streamServerZones */
+                /* serverZones */
                 head = templateServerHeader();
                 bodys[0] = templateServerZone(it.streamServerZones, 'server', vtsStatusVars.ids.server);
-                body = sHe('tbody', bodys[0]);
-                out += sHe('div id="streamServerZones"', sHe('h2', vtsStatusVars.titles.server) + sHe('table', head + body));
+                body = aHe('tbody', bodys[0]);
+                out = '{}{}'.format(out, aHe('div id="{}"'.format(vtsStatusVars.ids.server),
+                                             '{}{}'.format(aHe('h2', vtsStatusVars.titles.server),
+                                                           aHe('table', '{}{}'.format(head, body)))));
 
-                /* streamFilterZones */
-                if ('streamFilterZones' in it) {
+                /* filterZones */
+                if (vtsStatusVars.ids.filter in it) {
                     tmp = '';
                     for (var group in it.streamFilterZones) {
                         var filter = it.streamFilterZones[group];
-                        head = templateServerHeader();
-                        bodys[0] = templateServerZone(filter, group, vtsStatusVars.ids.filter);
-                        body = sHe('tbody', bodys[0]);
-                        tmp += sHe('h3', group) + sHe('table', head + body);
+                        head = templateServerHeader(cache);
+                        bodys[0] = templateServerZone(filter, group, vtsStatusVars.ids.filter, cache);
+                        body = aHe('tbody', bodys[0]);
+                        tmp = '{}{}{}'.format(tmp, aHe('h3', group), aHe('table', '{}{}'.format(head, body)));
                     }
-                    out += sHe('div id="streamFilterZones"', sHe('h2', vtsStatusVars.titles.filter) + tmp);
+                    out = '{}{}'.format(out, aHe('div id="{}"'.format(vtsStatusVars.ids.filter),
+                                                 '{}{}'.format(aHe('h2', vtsStatusVars.titles.filter), tmp)));
                 }
 
-                /* streamUpstreamZones */
-                if ('streamUpstreamZones' in it) {
+                /* upstreamZones */
+                if (vtsStatusVars.ids.upstream in it) {
                     tmp = '';
                     for (var group in it.streamUpstreamZones) {
                         var filter = it.streamUpstreamZones[group];
                         head = templateUpstreamHeader();
                         bodys[0] = templateUpstreamZone(filter, group, vtsStatusVars.ids.upstream);
-                        body = sHe('tbody', bodys[0]);
-                        tmp += sHe('h3', group) + sHe('table', head + body);
+                        body = aHe('tbody', bodys[0]);
+                        tmp = '{}{}{}'.format(tmp, aHe('h3', group), aHe('table', '{}{}'.format(head, body)));
                     }
-                    out += sHe('div id="streamUpstreamZones"', sHe('h2', vtsStatusVars.titles.upstream) + tmp);
+                    out = '{}{}'.format(out, aHe('div id="{}"'.format(vtsStatusVars.ids.upstream),
+                                                 '{}{}'.format(aHe('h2', vtsStatusVars.titles.upstream), tmp)));
                 }
 
                 return out;

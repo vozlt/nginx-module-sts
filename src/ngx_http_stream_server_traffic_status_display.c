@@ -542,6 +542,7 @@ ngx_http_stream_server_traffic_status_display_set_main(ngx_http_request_t *r,
 {
     ngx_atomic_int_t                                   ap, hn, ac, rq, rd, wr, wa;
     ngx_http_stream_server_traffic_status_loc_conf_t  *stscf;
+    ngx_http_stream_server_traffic_status_shm_info_t  *shm_info;
 
     stscf = ngx_http_get_module_loc_conf(r, ngx_http_stream_server_traffic_status_module);
 
@@ -553,10 +554,19 @@ ngx_http_stream_server_traffic_status_display_set_main(ngx_http_request_t *r,
     wr = *ngx_stat_writing;
     wa = *ngx_stat_waiting;
 
+    shm_info = ngx_pcalloc(r->pool, sizeof(ngx_http_stream_server_traffic_status_shm_info_t));
+    if (shm_info == NULL) {
+        return buf;
+    }
+
+    ngx_http_stream_server_traffic_status_shm_info(r, shm_info);
+
     buf = ngx_sprintf(buf, NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_JSON_FMT_MAIN,
                       &ngx_cycle->hostname, NGINX_VERSION, stscf->start_msec,
                       ngx_http_stream_server_traffic_status_current_msec(),
-                      ac, rd, wr, wa, ap, hn, rq);
+                      ac, rd, wr, wa, ap, hn, rq,
+                      shm_info->name, shm_info->max_size,
+                      shm_info->used_size, shm_info->used_node);
 
     return buf;
 }

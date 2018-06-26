@@ -72,7 +72,7 @@ This document describes nginx-module-sts `v0.1.0` released on 20 Feb 2017.
 
 ## Compatibility
 * Nginx
-  * 1.11.5 \<= (last tested: 1.11.10)
+  * 1.11.5 \<= (last tested: 1.15.0)
 
 Earlier versions does not work.
 
