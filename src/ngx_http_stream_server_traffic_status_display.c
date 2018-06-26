@@ -270,10 +270,10 @@ ngx_http_stream_server_traffic_status_display_handler_control(ngx_http_request_t
 static ngx_int_t
 ngx_http_stream_server_traffic_status_display_handler_default(ngx_http_request_t *r)
 {
-    size_t                                             size, len;
+    size_t                                             len;
     u_char                                            *o, *s;
     ngx_str_t                                          uri, type;
-    ngx_int_t                                          format, rc;
+    ngx_int_t                                          size, format, rc;
     ngx_buf_t                                         *b;
     ngx_chain_t                                        out;
     ngx_slab_pool_t                                   *shpool;
@@ -351,15 +351,12 @@ ngx_http_stream_server_traffic_status_display_handler_default(ngx_http_request_t
     }
 
     if (format == NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSON) {
-        size = ctx->shm_size;
         ngx_str_set(&type, "application/json");
 
     } else if (format == NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSONP) {
-        size = ctx->shm_size;
         ngx_str_set(&type, "application/javascript");
 
     } else {
-        size = sizeof(NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_HTML_DATA) + ngx_pagesize ;
         ngx_str_set(&type, "text/html");
     }
 
@@ -374,6 +371,13 @@ ngx_http_stream_server_traffic_status_display_handler_default(ngx_http_request_t
         if (rc == NGX_ERROR || rc > NGX_OK || r->header_only) {
             return rc;
         }
+    }
+
+    size = ngx_http_stream_server_traffic_status_display_get_size(r, format);
+    if (size == NGX_ERROR) {
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                      "display_handler_default::display_get_size() failed");
+        return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
 
     b = ngx_create_temp_buf(r->pool, size);
@@ -420,6 +424,107 @@ ngx_http_stream_server_traffic_status_display_handler_default(ngx_http_request_t
     }
 
     return ngx_http_output_filter(r, &out);
+}
+
+
+ngx_int_t
+ngx_http_stream_server_traffic_status_display_get_upstream_nelts(ngx_http_request_t *r) 
+{
+    ngx_uint_t                                    i, j, n;
+    ngx_stream_upstream_server_t                 *us;
+#if (NGX_STREAM_UPSTREAM_ZONE)
+    ngx_stream_upstream_rr_peer_t                *peer;
+    ngx_stream_upstream_rr_peers_t               *peers;
+#endif
+    ngx_stream_upstream_srv_conf_t               *uscf, **uscfp;
+    ngx_stream_upstream_main_conf_t              *umcf;
+    ngx_http_stream_server_traffic_status_ctx_t  *ctx;
+
+    ctx = ngx_http_get_module_main_conf(r, ngx_http_stream_server_traffic_status_module);
+    umcf = ctx->upstream;
+    uscfp = umcf->upstreams.elts;
+
+    for (i = 0, j = 0, n = 0; i < umcf->upstreams.nelts; i++) {
+
+        uscf = uscfp[i];
+
+        /* groups */
+        if (uscf->servers && !uscf->port) {
+            us = uscf->servers->elts;
+
+#if (NGX_HTTP_UPSTREAM_ZONE)
+            if (uscf->shm_zone == NULL) {
+                goto not_supported;
+            }   
+
+            peers = uscf->peer.data;
+
+            ngx_http_upstream_rr_peers_rlock(peers);
+
+            for (peer = peers->peer; peer; peer = peer->next) {
+                n++;
+            }   
+
+            ngx_http_upstream_rr_peers_unlock(peers);
+
+not_supported:
+
+#endif
+
+            for (j = 0; j < uscf->servers->nelts; j++) {
+                n += us[j].naddrs;
+            }
+        }   
+    }   
+
+    return n;
+}
+
+
+ngx_int_t
+ngx_http_stream_server_traffic_status_display_get_size(ngx_http_request_t *r,
+    ngx_int_t format)
+{
+    ngx_uint_t                                         size, un;
+    ngx_http_stream_server_traffic_status_shm_info_t  *shm_info;
+
+    shm_info = ngx_pcalloc(r->pool, sizeof(ngx_http_stream_server_traffic_status_shm_info_t));
+    if (shm_info == NULL) {
+        return NGX_ERROR;
+    }
+
+    ngx_http_stream_server_traffic_status_shm_info(r, shm_info);
+
+    /* allocate memory for the upstream groups even if upstream node not exists */
+    un = shm_info->used_node
+         + (ngx_uint_t) ngx_http_stream_server_traffic_status_display_get_upstream_nelts(r);
+
+    size = 0;
+
+    switch (format) {
+
+    case NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSON:
+    case NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSONP:
+        size = sizeof(ngx_http_stream_server_traffic_status_node_t) / NGX_PTR_SIZE
+               * NGX_ATOMIC_T_LEN * un  /* values size */
+               + (un * 1024)            /* names  size */
+               + 4096;                  /* main   size */
+        break;
+
+    case NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_HTML:
+        size = sizeof(NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_HTML_DATA) + ngx_pagesize;
+        break;
+    }
+
+    if (size <= 0) {
+        size = shm_info->max_size;
+    }
+
+    ngx_log_debug3(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+                   "sts::display_get_size(): size[%ui] used_size[%ui], used_node[%ui]",
+                   size, shm_info->used_size, shm_info->used_node);
+
+    return size;
 }
 
 
