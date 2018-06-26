@@ -12,6 +12,8 @@
 
 static char *ngx_http_stream_server_traffic_status_zone(ngx_conf_t *cf,
     ngx_command_t *cmd, void *conf);
+static char *ngx_http_stream_server_traffic_status_average_method(ngx_conf_t *cf,
+    ngx_command_t *cmd, void *conf);
 
 static void *ngx_http_stream_server_traffic_status_create_main_conf(ngx_conf_t *cf);
 static char *ngx_http_stream_server_traffic_status_init_main_conf(ngx_conf_t *cf,
@@ -25,6 +27,13 @@ static ngx_conf_enum_t  ngx_http_stream_server_traffic_status_display_format[] =
     { ngx_string("json"), NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSON },
     { ngx_string("html"), NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_HTML },
     { ngx_string("jsonp"), NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSONP },
+    { ngx_null_string, 0 }
+};
+
+
+static ngx_conf_enum_t  ngx_http_stream_server_traffic_status_average_method_post[] = {
+    { ngx_string("AMM"), NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_AMM },
+    { ngx_string("WMA"), NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_WMA },
     { ngx_null_string, 0 }
 };
 
@@ -64,6 +73,13 @@ static ngx_command_t ngx_http_stream_server_traffic_status_commands[] = {
       ngx_conf_set_str_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
       offsetof(ngx_http_stream_server_traffic_status_loc_conf_t, jsonp),
+      NULL },
+
+    { ngx_string("stream_server_traffic_status_average_method"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
+      ngx_http_stream_server_traffic_status_average_method,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      0,
       NULL },
 
     ngx_null_command
@@ -137,6 +153,45 @@ ngx_http_stream_server_traffic_status_zone(ngx_conf_t *cf, ngx_command_t *cmd, v
 }
 
 
+static char *
+ngx_http_stream_server_traffic_status_average_method(ngx_conf_t *cf,
+    ngx_command_t *cmd, void *conf)
+{
+    ngx_http_stream_server_traffic_status_loc_conf_t *stscf = conf;
+
+    char       *rv;
+    ngx_int_t   rc;
+    ngx_str_t  *value;
+
+    value = cf->args->elts;
+
+    cmd->offset = offsetof(ngx_http_stream_server_traffic_status_loc_conf_t, average_method);
+    cmd->post = &ngx_http_stream_server_traffic_status_average_method_post;
+
+    rv = ngx_conf_set_enum_slot(cf, cmd, conf);
+    if (rv != NGX_CONF_OK) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid parameter \"%V\"", &value[1]);
+        goto invalid;
+    }
+
+    /* second argument process */
+    if (cf->args->nelts == 3) {
+        rc = ngx_parse_time(&value[2], 0);
+        if (rc == NGX_ERROR) {
+            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid parameter \"%V\"", &value[2]);
+            goto invalid;
+        }
+        stscf->average_period = (ngx_msec_t) rc;
+    }
+
+    return NGX_CONF_OK;
+
+invalid:
+
+    return NGX_CONF_ERROR;
+}
+
+
 static void *
 ngx_http_stream_server_traffic_status_create_main_conf(ngx_conf_t *cf)
 {
@@ -177,10 +232,26 @@ ngx_http_stream_server_traffic_status_create_loc_conf(ngx_conf_t *cf)
         return NULL;
     }
 
+    /*
+     * set by ngx_pcalloc():
+     *
+     *     conf->shm_zone = { NULL, ... };
+     *     conf->enable = 0;
+     *     conf->shm_name = { 0, NULL };
+     *     conf->stats = { 0, ... };
+     *     conf->start_msec = 0;
+     *     conf->format = 0;
+     *     conf->jsonp = { 1, NULL };
+     *     conf->average_method = 0;
+     *     conf->average_period = 0;
+     */
+
     conf->start_msec = ngx_http_stream_server_traffic_status_current_msec();
     conf->enable = NGX_CONF_UNSET;
     conf->shm_zone = NGX_CONF_UNSET_PTR;
     conf->format = NGX_CONF_UNSET;
+    conf->average_method = NGX_CONF_UNSET;
+    conf->average_period = NGX_CONF_UNSET_MSEC;
 
     conf->node_caches = ngx_pcalloc(cf->pool, sizeof(ngx_rbtree_node_t *)
                                     * (NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_UPSTREAM_FG + 1));
@@ -216,6 +287,10 @@ ngx_http_stream_server_traffic_status_merge_loc_conf(ngx_conf_t *cf, void *paren
                          NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSON);
     ngx_conf_merge_str_value(conf->jsonp, prev->jsonp,
                              NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_JSONP);
+    ngx_conf_merge_value(conf->average_method, prev->average_method,
+                         NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_AMM);
+    ngx_conf_merge_msec_value(conf->average_period, prev->average_period,
+                              NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_AVG_PERIOD * 1000);
 
     conf->shm_name = ctx->shm_name;
 

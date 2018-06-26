@@ -36,11 +36,16 @@
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_HTML          2
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_FORMAT_JSONP         3
 
+#define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_AMM   0
+#define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_WMA   1
+
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_SHM_NAME                 \
     "stream_server_traffic_status"
 
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_JSONP                    \
     "ngx_http_stream_server_traffic_status_jsonp_callback"
+
+#define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_AVG_PERIOD   60
 
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_JSON_FMT_S           "{"
 #define NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_JSON_FMT_OBJECT_S    "\"%V\":{"
@@ -229,6 +234,10 @@
 #define ngx_http_stream_server_traffic_status_boolean_to_string(b)             \
     (b) ? "true" : "false"
 
+#define ngx_http_stream_server_traffic_status_triangle(n) (unsigned) (         \
+    n * (n + 1) / 2                                                            \
+)
+
 
 /* must be the same as ngx_stream_server_traffic_status_ctx_t */
 typedef struct {
@@ -262,6 +271,9 @@ typedef struct {
     ngx_msec_t                                      start_msec;
     ngx_flag_t                                      format;
     ngx_str_t                                       jsonp;
+
+    ngx_flag_t                                      average_method;
+    ngx_msec_t                                      average_period;
 
     ngx_rbtree_node_t                             **node_caches;
 } ngx_http_stream_server_traffic_status_loc_conf_t;

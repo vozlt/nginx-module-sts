@@ -568,8 +568,11 @@ ngx_http_stream_server_traffic_status_display_set_server_node(
     u_char *buf, ngx_str_t *key,
     ngx_http_stream_server_traffic_status_node_t *stsn)
 {
-    ngx_int_t  rc;
-    ngx_str_t  tmp, dst, protocol;
+    ngx_int_t                                          rc;
+    ngx_str_t                                          tmp, dst, protocol;
+    ngx_http_stream_server_traffic_status_loc_conf_t  *stscf;
+
+    stscf = ngx_http_get_module_loc_conf(r, ngx_http_stream_server_traffic_status_module);
 
     tmp = *key;
 
@@ -595,7 +598,9 @@ ngx_http_stream_server_traffic_status_display_set_server_node(
                       stsn->stat_4xx_counter,
                       stsn->stat_5xx_counter,
                       stsn->stat_session_time_counter,
-                      stsn->stat_session_time,
+                      ngx_http_stream_server_traffic_status_node_time_queue_average(
+                          &stsn->stat_session_times, stscf->average_method,
+                          stscf->average_period),
                       ngx_http_stream_server_traffic_status_display_get_time_queue_times(r,
                           &stsn->stat_session_times),
                       ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(r,
@@ -653,7 +658,9 @@ ngx_http_stream_server_traffic_status_display_set_server(ngx_http_request_t *r,
             stscf->stats.stat_4xx_counter += stsn->stat_4xx_counter;
             stscf->stats.stat_5xx_counter += stsn->stat_5xx_counter;
             stscf->stats.stat_session_time_counter += stsn->stat_session_time_counter;
-            stscf->stats.stat_session_time += stsn->stat_session_time;
+            ngx_http_stream_server_traffic_status_node_time_queue_merge(
+                &stscf->stats.stat_session_times,
+                &stsn->stat_session_times, stscf->average_period);
 
             stscf->stats.stat_connect_counter_oc += stsn->stat_connect_counter_oc;
             stscf->stats.stat_in_bytes_oc += stsn->stat_in_bytes_oc;
@@ -776,8 +783,11 @@ ngx_http_stream_server_traffic_status_display_set_upstream_node(ngx_http_request
 #endif
      )
 {
-    ngx_int_t  rc;
-    ngx_str_t  key;
+    ngx_int_t                                          rc;
+    ngx_str_t                                          key;
+    ngx_http_stream_server_traffic_status_loc_conf_t  *stscf;
+
+    stscf = ngx_http_get_module_loc_conf(r, ngx_http_stream_server_traffic_status_module);
 
 #if nginx_version > 1007001
     rc = ngx_http_stream_server_traffic_status_escape_json_pool(r->pool, &key, &us->name);
@@ -798,7 +808,9 @@ ngx_http_stream_server_traffic_status_display_set_upstream_node(ngx_http_request
                 stsn->stat_3xx_counter, stsn->stat_4xx_counter,
                 stsn->stat_5xx_counter,
                 stsn->stat_session_time_counter,
-                stsn->stat_session_time,
+                ngx_http_stream_server_traffic_status_node_time_queue_average(
+                    &stsn->stat_session_times, stscf->average_method,
+                    stscf->average_period),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_times(r,
                     &stsn->stat_session_times),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(r,
@@ -808,7 +820,9 @@ ngx_http_stream_server_traffic_status_display_set_upstream_node(ngx_http_request
                 ngx_http_stream_server_traffic_status_display_get_histogram_bucket_counters(r,
                     &stsn->stat_session_buckets),
                 stsn->stat_upstream.session_time_counter,
-                stsn->stat_upstream.session_time,
+                ngx_http_stream_server_traffic_status_node_time_queue_average(
+                    &stsn->stat_upstream.session_times, stscf->average_method,
+                    stscf->average_period),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_times(r,
                     &stsn->stat_upstream.session_times),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(r,
@@ -818,7 +832,9 @@ ngx_http_stream_server_traffic_status_display_set_upstream_node(ngx_http_request
                 ngx_http_stream_server_traffic_status_display_get_histogram_bucket_counters(r,
                     &stsn->stat_upstream.session_buckets),
                 stsn->stat_upstream.connect_time_counter,
-                stsn->stat_upstream.connect_time,
+                ngx_http_stream_server_traffic_status_node_time_queue_average(
+                    &stsn->stat_upstream.connect_times, stscf->average_method,
+                    stscf->average_period),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_times(r,
                     &stsn->stat_upstream.connect_times),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(r,
@@ -828,7 +844,9 @@ ngx_http_stream_server_traffic_status_display_set_upstream_node(ngx_http_request
                 ngx_http_stream_server_traffic_status_display_get_histogram_bucket_counters(r,
                     &stsn->stat_upstream.connect_buckets),
                 stsn->stat_upstream.first_byte_time_counter,
-                stsn->stat_upstream.first_byte_time,
+                ngx_http_stream_server_traffic_status_node_time_queue_average(
+                    &stsn->stat_upstream.first_byte_times, stscf->average_method,
+                    stscf->average_period),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_times(r,
                     &stsn->stat_upstream.first_byte_times),
                 ngx_http_stream_server_traffic_status_display_get_time_queue_msecs(r,
@@ -1157,6 +1175,10 @@ ngx_http_stream_server_traffic_status_display_set(ngx_http_request_t *r,
     ngx_memzero(&stscf->stats, sizeof(stscf->stats));
 
     buf = ngx_sprintf(buf, NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_JSON_FMT_S);
+
+    /* init stats */
+    ngx_memzero(&stscf->stats, sizeof(stscf->stats));
+    ngx_http_stream_server_traffic_status_node_time_queue_init(&stscf->stats.stat_session_times);
 
     /* main & connections */
     buf = ngx_http_stream_server_traffic_status_display_set_main(r, buf);

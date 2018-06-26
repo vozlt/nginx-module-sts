@@ -107,6 +107,26 @@ ngx_rbtree_node_t *ngx_http_stream_server_traffic_status_node_lookup(
     ngx_rbtree_t *rbtree, ngx_str_t *key, uint32_t hash);
 void ngx_http_stream_server_traffic_status_node_zero(
     ngx_http_stream_server_traffic_status_node_t *stsn);
+
+void ngx_http_stream_server_traffic_status_node_time_queue_zero(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q);
+void ngx_http_stream_server_traffic_status_node_time_queue_init(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q);
+
+ngx_msec_t ngx_http_stream_server_traffic_status_node_time_queue_average(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_int_t method, ngx_msec_t period);
+ngx_msec_t ngx_http_stream_server_traffic_status_node_time_queue_amm(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_msec_t period);
+ngx_msec_t ngx_http_stream_server_traffic_status_node_time_queue_wma(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_msec_t period);
+void ngx_http_stream_server_traffic_status_node_time_queue_merge(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *a,
+    ngx_http_stream_server_traffic_status_node_time_queue_t *b,
+    ngx_msec_t period);
+
 void ngx_http_stream_server_traffic_status_find_name(ngx_http_request_t *r,
     ngx_str_t *buf);
 ngx_rbtree_node_t *ngx_http_stream_server_traffic_status_find_node(ngx_http_request_t *r,

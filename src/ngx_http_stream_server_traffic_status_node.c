@@ -170,4 +170,121 @@ ngx_http_stream_server_traffic_status_node_zero(ngx_http_stream_server_traffic_s
     stsn->stat_u_session_time_counter_oc = 0;
 }
 
+
+void
+ngx_http_stream_server_traffic_status_node_time_queue_zero(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q)
+{
+    ngx_memzero(q, sizeof(ngx_http_stream_server_traffic_status_node_time_queue_t));
+}
+
+
+void
+ngx_http_stream_server_traffic_status_node_time_queue_init(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q)
+{
+    ngx_http_stream_server_traffic_status_node_time_queue_zero(q);
+    q->rear = NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_QUEUE_LEN - 1;
+    q->len = NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_QUEUE_LEN;
+}
+
+
+ngx_msec_t
+ngx_http_stream_server_traffic_status_node_time_queue_average(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_int_t method, ngx_msec_t period)
+{
+    ngx_msec_t  avg;
+
+    if (method == NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_AVERAGE_METHOD_AMM) {
+        avg = ngx_http_stream_server_traffic_status_node_time_queue_amm(q, period);
+    } else {
+        avg = ngx_http_stream_server_traffic_status_node_time_queue_wma(q, period);
+    }
+
+    return avg;
+}
+
+
+ngx_msec_t
+ngx_http_stream_server_traffic_status_node_time_queue_amm(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_msec_t period)
+{
+    ngx_int_t   i, j, k;
+    ngx_msec_t  x, current_msec;
+
+    current_msec = ngx_http_stream_server_traffic_status_current_msec();
+
+    x = period ? (current_msec - period) : 0;
+
+    for (i = q->front, j = 1, k = 0; i != q->rear; i = (i + 1) % q->len, j++) {
+        if (x < q->times[i].time) {
+            k += (ngx_int_t) q->times[i].msec;
+        }
+    }
+
+    if (j != q->len) {
+        return 0;
+    }
+
+    return (ngx_msec_t) (k / (q->len - 1));
+}
+
+
+ngx_msec_t
+ngx_http_stream_server_traffic_status_node_time_queue_wma(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *q,
+    ngx_msec_t period)
+{
+    ngx_int_t   i, j, k;
+    ngx_msec_t  x, current_msec;
+
+    current_msec = ngx_http_stream_server_traffic_status_current_msec();
+
+    x = period ? (current_msec - period) : 0;
+
+    for (i = q->front, j = 1, k = 0; i != q->rear; i = (i + 1) % q->len, j++) {
+        if (x < q->times[i].time) {
+            k += (ngx_int_t) q->times[i].msec * j;
+        }
+    }
+
+    if (j != q->len) {
+        return 0;
+    }
+
+    return (ngx_msec_t)
+               (k / (ngx_int_t) ngx_http_stream_server_traffic_status_triangle((q->len - 1)));
+}
+
+
+void
+ngx_http_stream_server_traffic_status_node_time_queue_merge(
+    ngx_http_stream_server_traffic_status_node_time_queue_t *a,
+    ngx_http_stream_server_traffic_status_node_time_queue_t *b,
+    ngx_msec_t period)
+{
+    ngx_int_t   i;
+    ngx_msec_t  x, current_msec;
+
+    current_msec = ngx_http_stream_server_traffic_status_current_msec();
+
+    x = period ? (current_msec - period) : 0;
+
+    for (i = a->front; i != a->rear; i = (i + 1) % a->len) {
+            a->times[i].time = (a->times[i].time > b->times[i].time)
+                               ? a->times[i].time
+                               : b->times[i].time;
+
+            if (x < a->times[i].time) {
+                a->times[i].msec = (a->times[i].msec + b->times[i].msec) / 2
+                                   + (a->times[i].msec + b->times[i].msec) % 2;
+
+            } else {
+                a->times[i].msec = 0;
+            }
+    }
+}
+
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */

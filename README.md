@@ -46,6 +46,7 @@ Table of Contents
   * [stream_server_traffic_status_display](#stream_server_traffic_status_display)
   * [stream_server_traffic_status_display_format](#stream_server_traffic_status_display_format)
   * [stream_server_traffic_status_display_jsonp](#stream_server_traffic_status_display_jsonp)
+  * [stream_server_traffic_status_average_method](#stream_server_traffic_status_average_method)
   * [server_traffic_status](#server_traffic_status)
   * [server_traffic_status_zone](#server_traffic_status_zone)
   * [server_traffic_status_filter](#server_traffic_status_filter)
@@ -55,6 +56,8 @@ Table of Contents
   * [server_traffic_status_limit_traffic](#server_traffic_status_limit_traffic)
   * [server_traffic_status_limit_traffic_by_set_key](#server_traffic_status_limit_traffic_by_set_key)
   * [server_traffic_status_limit_check_duplicate](#server_traffic_status_limit_check_duplicate)
+  * [server_traffic_status_average_method](#server_traffic_status_average_method)
+  * [server_traffic_status_histogram_buckets](#server_traffic_status_histogram_buckets)
 * [See Also](#see-also)
 * [TODO](#todo)
 * [Donation](#donation)
@@ -833,6 +836,26 @@ If you set `jsonp`, will respond with a JSONP callback function(default: *ngx_ht
 
 `Description:` Sets the callback name for the JSONP.
 
+### stream_server_traffic_status_average_method
+
+| -   | - |
+| --- | --- |
+| **Syntax**  | **stream_server_traffic_status_average_method** \<AMM\|WMA\> [*period*] |
+| **Default** | AMM 60s |
+| **Context** | http, server, location |
+
+`Description:` Sets the method which is a formula that calculate the average of response processing times.
+The *period* is an effective time of the values used for the average calculation.(Default: 60s)
+If *period* set to 0, effective time is ignored.
+In this case, the last average value is displayed even if there is no requests and after the elapse of time.
+The corresponding values are `sessionMsec`, `uSessionMsec`, `uConnectMsec`, `uFirstByteMsec` in JSON.
+
+* **AMM**
+  * The AMM is the [arithmetic mean](https://en.wikipedia.org/wiki/Arithmetic_mean).
+* **WMA**
+  * THE WMA is the [weighted moving average](https://en.wikipedia.org/wiki/Moving_average#Weighted_moving_average).
+
+
 ### server_traffic_status
 
 | -   | - |
@@ -1047,6 +1070,54 @@ The *member* is the same as `server_traffic_status_limit_traffic` directive.
 `Description:` Enables or disables the deduplication of server_traffic_status_limit_by_set_key.
 It is processed only one of duplicate values(`member` | `key` + `member`)
 in each directives(stream, server) if this option is enabled.
+
+### server_traffic_status_average_method
+
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_average_method** \<AMM\|WMA\> [*period*] |
+| **Default** | AMM 60s |
+| **Context** | stream, server |
+
+`Description:` Sets the method which is a formula that calculate the average of response processing times.
+The *period* is an effective time of the values used for the average calculation.(Default: 60s)
+If *period* set to 0, effective time is ignored.
+In this case, the last average value is displayed even if there is no requests and after the elapse of time.
+The corresponding value is only *$sts_session_time* variable.
+
+* **AMM**
+  * The AMM is the [arithmetic mean](https://en.wikipedia.org/wiki/Arithmetic_mean).
+* **WMA**
+  * THE WMA is the [weighted moving average](https://en.wikipedia.org/wiki/Moving_average#Weighted_moving_average).
+
+
+`Caveats`: The *$sts_session_time* variable is the value calculated at the time of the last request.
+It is not calculated when using variables.
+
+### server_traffic_status_histogram_buckets
+
+| -   | - |
+| --- | --- |
+| **Syntax**  | **server_traffic_status_histogram_buckets** *second* ... |
+| **Default** | - |
+| **Context** | stream |
+
+`Description:` Sets the observe buckets to be used in the histograms.
+By default, if you do not set this directive, it will not work.
+The *second* can be expressed in decimal places with a minimum value of 0.001(1ms).
+The maximum size of the buckets is 32. If this value is insufficient for you,
+change the `NGX_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_BUCKET_LEN` in the
+`nginx-mdule-stream-sts/src/ngx_stream_server_traffic_status_node.h`
+and the `NGX_HTTP_STREAM_SERVER_TRAFFIC_STATUS_DEFAULT_BUCKET_LEN` in the
+`nginx-module-sts/src/ngx_http_stream_server_traffic_status_node.h`.
+
+For examples:
+* **server_traffic_status_histogram_buckets** `0.005` `0.01` `0.05` `0.1` `0.5` `1` `5` `10`
+  * The observe buckets are [5ms 10ms 50ms 1s 5s 10s].
+* **server_traffic_status_histogram_buckets** `0.005` `0.01` `0.05` `0.1`
+  * The observe buckets are [5ms 10ms 50ms 1s].
+
+`Caveats:` By default, if you do not set this directive, the histogram statistics does not work.
 
 ## See Also
 * [nginx-module-stream-sts](https://github.com/vozlt/nginx-module-stream-sts)
