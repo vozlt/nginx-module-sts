@@ -64,7 +64,7 @@ Table of Contents
 * [Author](#author)
 
 ## Version
-This document describes nginx-module-sts `v0.1.0` released on 20 Feb 2017.
+This document describes nginx-module-sts `v0.1.1` released on 04 Jul 2018.
 
 ## Dependencies
 * [nginx](http://nginx.org)

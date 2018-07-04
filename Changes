@@ -1,3 +1,19 @@
+v0.1.1 [Wed Jul 04 2018 YoungJoo.Kim <vozltx@gmail.com>]
+    * Feature: added support for implementing format/prometheus
+
+    * Feature: added sharedZones in JSON to support shared memory information
+
+    * Feature: added stream_server_traffic_status_average_method directive to
+      support for selecting an average formula.
+
+    * Feature: added data fields for server_traffic_status_histogram_buckets
+      directive to set the histogram type of request processing time.
+
+    * Bugfix:  fixed to display all A records of server without zone directive
+      in the upstream block.
+
+    * Compatibility: fixed ngx_current_msec that changed in nginx-1.13.10
+
 v0.1.0 [Mon Feb 20 2017 YoungJoo.Kim <vozltx@gmail.com>]
     * The first version.
 
