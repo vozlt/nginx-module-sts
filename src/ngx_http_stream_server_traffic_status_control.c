@@ -8,6 +8,7 @@
 
 #include "ngx_http_stream_server_traffic_status_module.h"
 #include "ngx_http_stream_server_traffic_status_control.h"
+#include "ngx_http_stream_server_traffic_status_display_json.h"
 #include "ngx_http_stream_server_traffic_status_display.h"
 
 static void ngx_http_stream_server_traffic_status_node_upstream_lookup(

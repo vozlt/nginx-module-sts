@@ -2,24 +2,28 @@ ngx_addon_name=ngx_http_stream_server_traffic_status_module
 have=NGX_STAT_STUB . auto/have
 
 HTTP_STREAM_STS_SRCS=" \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.c      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.c      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.c         \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.c        \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.c      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.c     \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.c     \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.c             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.c             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.c                \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.c               \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.c             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.c            \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.c            \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display_json.c       \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display_prometheus.c \
                  "
 
 HTTP_STREAM_STS_DEPS=" \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.h      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.h      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.h         \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.h        \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.h      \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.h     \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.h     \
-                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module_html.h \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module.h             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_string.h             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_shm.h                \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_node.h               \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_filter.h             \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_control.h            \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display.h            \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display_json.h       \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_display_prometheus.h \
+                 $ngx_addon_dir/src/ngx_http_stream_server_traffic_status_module_html.h        \
                  "
 if test -n "$ngx_module_link"; then
     ngx_module_type=HTTP

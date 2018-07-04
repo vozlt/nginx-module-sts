@@ -92,6 +92,7 @@ Earlier versions does not work.
 
 2. Add the module to the build configuration by adding
   ```
+  --with-stream
   --add-module=/path/to/nginx-module-sts
   --add-module=/path/to/nginx-module-stream-sts
   ```
@@ -139,19 +140,14 @@ It contains the current status such as servers, upstreams, user-defined filter.
 First of all, It is required both the directive `server_traffic_status_zone` in stream block and `stream_server_traffic_status_zone` in http block, and then if the directive `stream_server_traffic_status_display` is set, can be access to as follows:
 
 * /status/format/json
-
-* /status/format/html
-
-* /status/format/jsonp
-
-* /status/control
-
   * If you request `/status/format/json`, will respond with a JSON document containing the current activity data for using in live dashboards and third-party monitoring tools.
-
+* /status/format/html
   * If you request `/status/format/html`, will respond with the built-in live dashboard in HTML that requests internally to `/status/format/json`.
- 
+* /status/format/jsonp
   * If you request `/status/format/jsonp`, will respond with a JSONP callback function containing the current activity data for using in live dashboards and third-party monitoring tools. 
-
+* /status/format/prometheus                                                                                                                                                                         
+  * If you request `/status/format/prometheus`, will respond with a [prometheus](https://prometheus.io) document containing the current activity data.   
+* /status/control
   * If you request `/status/control`, will respond with a JSON document after it reset or delete zones through a query string. See the [Control](#control).
 
 JSON document contains as follows:
@@ -171,6 +167,12 @@ JSON document contains as follows:
         "handled":...,
         "requests":...
     },
+    "sharedZones": {
+        "name":...,
+        "maxSize":...,
+        "usedSize":...,
+        "usedNode":...
+    },
     "streamServerZones": {
         "...":{
             "port":...,
@@ -185,11 +187,16 @@ JSON document contains as follows:
                 "4xx":...,
                 "5xx":...,
             },
+            "sessionMsecCounter":...,
             "sessionMsec":...,
             "sessionMsecs":{
                 "times":[...],
                 "msecs":[...]
             },
+            "sessionBuckets":{
+                "msecs":[...],
+                "counters":[...]
+            }
         }
         ...
     },
@@ -209,11 +216,16 @@ JSON document contains as follows:
                     "4xx":...,
                     "5xx":...,
                 },
+                "sessionMsecCounter":...,
                 "sessionMsec":...,
                 "sessionMsecs":{
                     "times":[...],
                     "msecs":[...]
                 },
+                "sessionBuckets":{
+                    "msecs":[...],
+                    "counters":[...]
+                }
             },
             ...
         },
@@ -233,25 +245,45 @@ JSON document contains as follows:
                     "4xx":...,
                     "5xx":...
                 },
+                "sessionMsecCounter":...,
                 "sessionMsec":...,
                 "sessionMsecs":{
                     "times":[...],
                     "msecs":[...]
                 },
+                "sessionBuckets":{
+                    "msecs":[...]
+                    "counters":[...]
+                },
+                "uSessionMsecCounter":...,
                 "uSessionMsec":...,
                 "uSessionMsecs":{
                     "times":[...],
                     "msecs":[...]
                 },
+                "uSessionBuckets":{
+                    "msecs":[...]
+                    "counters":[...]
+                },
+                "uConnectMsecCounter":...,
                 "uConnectMsec":...,
                 "uConnectMsecs":{
                     "times":[...],
                     "msecs":[...]
                 },
+                "uConnectBuckets":{
+                    "msecs":[...]
+                    "counters":[...]
+                },
+                "uFirstByteMsecCounter":...,
                 "uFirstByteMsec":...,
                 "uFirstByteMsecs":{
                     "times":[...],
                     "msecs":[...]
+                },
+                "uFirstByteBuckets":{
+                    "msecs":[...]
+                    "counters":[...]
                 },
                 "weight":...,
                 "maxFails":...,
@@ -281,7 +313,7 @@ JSON document contains as follows:
   * Traffic(in/out) and request and response counts per server in each upstream group
   * Current settings(weight, maxfails, failtimeout...) in nginx.conf
 
-The directive `stream_server_traffic_status_display_format` sets the default ouput format that is one of json or html. (Default: json)
+The directive `stream_server_traffic_status_display_format` sets the default ouput format that is one of json,jsonp,html,prometheus. (Default: json)
 
 Traffic calculation as follows:
 
@@ -485,6 +517,15 @@ The following status information is provided in the JSON format:
     * The total number of handled client connections.
   * requests
     * The total number of requested client connections.
+* sharedZones
+  * name
+    * The name of shared memory specified in the configuration.(default: `stream_server_traffic_status`)
+  * maxSize
+    * The limit on the maximum size of the shared memory specified in the configuration.
+  * usedSize
+    * The current size of the shared memory.
+  * usedNode
+    * The current number of node using in shared memory. It can get an approximate size for one node with the following formula: (*usedSize* / *usedNode*)
 * streamServerZones
   * connectCounter
     * The total number of client requests received from clients.
@@ -495,6 +536,8 @@ The following status information is provided in the JSON format:
   * responses
     * 1xx, 2xx, 3xx, 4xx, 5xx
       * The number of responses with status codes 1xx, 2xx, 3xx, 4xx, and 5xx.
+  * sessionMsecCounter
+    * The number of accumulated request processing time in milliseconds.
   * sessionMsec
     * The average of request processing times in milliseconds.
   * sessionMsecs
@@ -502,6 +545,11 @@ The following status information is provided in the JSON format:
       * The times in milliseconds at request processing times.
     * msecs
       * The request processing times in milliseconds.
+  * sessionBuckets
+    * msecs
+      * The bucket values of histogram set by `server_traffic_status_histogram_buckets` directive.
+    * counters
+      * The cumulative values for the reason that each bucket value is greater than or equal to the request processing time.
 * streamFilterZones
   * It provides the same fields with `streamServerZones` except that it included group names.
 * streamUpstreamZones
@@ -516,34 +564,62 @@ The following status information is provided in the JSON format:
   * responses
     * 1xx, 2xx, 3xx, 4xx, 5xx
       * The number of responses with status codes 1xx, 2xx, 3xx, 4xx, and 5xx.
+  * sessionMsecCounter
+    * The number of accumulated request processing times in milliseconds including upstream.
   * sessionMsec
-    * The average of request processing times including upstream in milliseconds.
+    * The average of request processing times in millseconds including upstream.
   * sessionMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
-      * The request processing times including upstream in milliseconds.
+      * The request processing times in milliseconds including upstream.
+  * sessionBuckets
+    * msecs
+      * The bucket values of histogram set by `server_traffic_status_histogram_buckets` directive.
+    * counters
+      * The cumulative values for the reason that each bucket value is greater than or equal to the request processing time.
+  * uSessionMsecCounter
+    * The number of accumulated the session duration time in milliseconds to the upstream server.
   * uSessionMsec
-    * The average of only upstream response processing times in milliseconds.
+    * The average of the session duration times in milliseconds to the upstream server.
   * uSessionMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
-      * The only upstream response processing times in milliseconds.
+      * The session duration times in milliseconds to the upstream server.
+  * uSessionBuckets
+    * msecs
+      * The bucket values of histogram set by `server_traffic_status_histogram_buckets` directive.
+    * counters
+      * The cumulative values for the reason that each bucket value is greater than or equal to the session duration time to the upstream server.
+  * uConnectMsecCounter
+    * The number of accumulated the time to connect to the upstream server.
   * uConnectMsec
-    * The average of only upstream times to connect to the upstream server (1.11.4) in milliseconds.
+    * The average of the times in milliseconds to connect to the upstream server (1.11.4).
   * uConnectMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
-      * The only upstream response processing times in milliseconds.
+      * The times in milliseconds to connect to the upstream server.
+  * uConnectBuckets
+    * msecs
+      * The bucket values of histogram set by `server_traffic_status_histogram_buckets` directive.
+    * counters
+      * The cumulative values for the reason that each bucket value is greater than or equal to the time to connect to the upstream server.
+  * uFirstByteMsecCounter
+    * The number of accumulated the times in milliseconds to receive the first byte of data.
   * uFirstByteMsec
-    * The average of only upstream times to receive the first byte of data (1.11.4) in milliseconds.
+    * The average of the times in milliseconds to receive the first byte of data (1.11.4).
   * uFirstByteMsecs
     * times
       * The times in milliseconds at request processing times.
     * msecs
-      * The only upstream response processing times in milliseconds.
+      * The times in milliseconds to receive the first byte of data (1.11.4).
+  * uFirstByteBuckets
+    * msecs
+      * The bucket values of histogram set by `server_traffic_status_histogram_buckets` directive.
+    * counters
+      * The cumulative values for the reason that each bucket value is greater than or equal to the time to receive the first byte of data.
   * weight
     * Current `weight` setting of the server.
   * maxFails
@@ -817,7 +893,7 @@ directive in stream block.
 
 | -   | - |
 | --- | --- |
-| **Syntax**  | **stream_server_traffic_status_display_format** \<json\|html\|jsonp\> |
+| **Syntax**  | **stream_server_traffic_status_display_format** \<json\|html\|jsonp\|prometheus\> |
 | **Default** | json |
 | **Context** | http, server, location |
 
@@ -825,6 +901,7 @@ directive in stream block.
 If you set `json`, will respond with a JSON document.
 If you set `html`, will respond with the built-in live dashboard in HTML.
 If you set `jsonp`, will respond with a JSONP callback function(default: *ngx_http_stream_server_traffic_status_jsonp_callback*).
+If you set `prometheus`, will respond with a [prometheus](https://prometheus.io) document.
 
 ### stream_server_traffic_status_display_jsonp
 
