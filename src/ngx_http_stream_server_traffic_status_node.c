@@ -262,18 +262,24 @@ ngx_http_stream_server_traffic_status_node_time_queue_wma(
 void
 ngx_http_stream_server_traffic_status_node_time_queue_merge(
     ngx_http_stream_server_traffic_status_node_time_queue_t *a,
-    ngx_http_stream_server_traffic_status_node_time_queue_t *b)
+    ngx_http_stream_server_traffic_status_node_time_queue_t *b,
+    ngx_msec_t period)
 {
     ngx_int_t   i,j,k,n,len;
+    ngx_msec_t  x, current_msec;
     ngx_http_stream_server_traffic_status_node_time_queue_t q;
     ngx_http_stream_server_traffic_status_node_time_queue_init(&q);
     len = q.len;
+    current_msec = ngx_http_stream_server_traffic_status_current_msec();
+    x = period ? (current_msec - period) : 0;
 
     for(i = a->rear, j = b->rear, k = q.rear, n = 0;
         n < len -1;
         ++n ) {
         if (a->times[(i + len - 1) % len].time >
             b->times[(j + len - 1) % len].time) {
+            if (x >= a->times[(i + len - 1) % len].time)
+                break;
             q.times[(k + len - 1) % len].time =
                 a->times[(i + len - 1) % len].time;
             q.times[(k + len - 1) % len].msec =
@@ -281,6 +287,8 @@ ngx_http_stream_server_traffic_status_node_time_queue_merge(
             i = (i + len - 1) % len;
         }
         else {
+            if (x >= b->times[(j + len - 1) % len].time)
+                break;
             q.times[(k + len - 1) % len].time =
                 b->times[(j + len - 1) % len].time;
             q.times[(k + len - 1) % len].msec =

@@ -124,7 +124,8 @@ ngx_msec_t ngx_http_stream_server_traffic_status_node_time_queue_wma(
     ngx_msec_t period);
 void ngx_http_stream_server_traffic_status_node_time_queue_merge(
     ngx_http_stream_server_traffic_status_node_time_queue_t *a,
-    ngx_http_stream_server_traffic_status_node_time_queue_t *b);
+    ngx_http_stream_server_traffic_status_node_time_queue_t *b,
+    ngx_msec_t period);
 
 ngx_rbtree_node_t *ngx_http_stream_server_traffic_status_find_node(ngx_http_request_t *r,
     ngx_str_t *key, unsigned type, uint32_t key_hash);
