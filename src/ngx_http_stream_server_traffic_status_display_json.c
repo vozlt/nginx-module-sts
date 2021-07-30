@@ -147,7 +147,7 @@ ngx_http_stream_server_traffic_status_display_set_server(ngx_http_request_t *r,
             stscf->stats.stat_session_time_counter += stsn->stat_session_time_counter;
             ngx_http_stream_server_traffic_status_node_time_queue_merge(
                 &stscf->stats.stat_session_times,
-                &stsn->stat_session_times, stscf->average_period);
+                &stsn->stat_session_times);
 
             stscf->stats.stat_connect_counter_oc += stsn->stat_connect_counter_oc;
             stscf->stats.stat_in_bytes_oc += stsn->stat_in_bytes_oc;
