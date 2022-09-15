@@ -218,8 +218,7 @@ ngx_http_stream_server_traffic_status_node_time_queue_amm(
 
     x = period ? (current_msec - period) : 0;
 
-    for (i = q->front, j = 1, k = 0, n = 0; i != q->rear;
-         i = (i + 1) % q->len, j++) {
+    for (i = q->front, j = 1, k = 0, n = 0; i != q->rear; i = (i + 1) % q->len, j++) {
         if (x < q->times[i].time) {
             k += (ngx_int_t) q->times[i].msec;
             ++n;
@@ -243,18 +242,16 @@ ngx_http_stream_server_traffic_status_node_time_queue_wma(
     ngx_http_stream_server_traffic_status_node_time_queue_t *q,
     ngx_msec_t period)
 {
-    ngx_int_t   i, j, k, n;
+    ngx_int_t   i, j, k;
     ngx_msec_t  x, current_msec;
 
     current_msec = ngx_http_stream_server_traffic_status_current_msec();
 
     x = period ? (current_msec - period) : 0;
 
-    for (i = q->front, j = 1, k = 0, n = 0; i != q->rear;
-         i = (i + 1) % q->len, j++) {
+    for (i = q->front, j = 1, k = 0; i != q->rear; i = (i + 1) % q->len, j++) {
         if (x < q->times[i].time) {
             k += (ngx_int_t) q->times[i].msec * j;
-            ++n;
         }
     }
 
@@ -262,12 +259,8 @@ ngx_http_stream_server_traffic_status_node_time_queue_wma(
         return 0;
     }
 
-    if (!n) {
-        return (ngx_msec_t) 0;
-    }
-
     return (ngx_msec_t)
-               (k / (ngx_int_t) ngx_http_stream_server_traffic_status_triangle(n));
+               (k / (ngx_int_t) ngx_http_stream_server_traffic_status_triangle((q->len - 1)));
 }
 
 
@@ -277,39 +270,35 @@ ngx_http_stream_server_traffic_status_node_time_queue_merge(
     ngx_http_stream_server_traffic_status_node_time_queue_t *b,
     ngx_msec_t period)
 {
-    ngx_int_t   i,j,k,n,len;
-    ngx_msec_t  x, current_msec;
-    ngx_http_stream_server_traffic_status_node_time_queue_t q;
+    ngx_int_t                                                i, j, k, n, len;
+    ngx_msec_t                                               x, current_msec;
+    ngx_http_stream_server_traffic_status_node_time_queue_t  q;
+
     ngx_http_stream_server_traffic_status_node_time_queue_init(&q);
-    len = q.len;
     current_msec = ngx_http_stream_server_traffic_status_current_msec();
     x = period ? (current_msec - period) : 0;
+    len = q.len;
 
-    for(i = a->rear, j = b->rear, k = q.rear, n = 0;
-        n < len -1;
-        ++n ) {
-        if (a->times[(i + len - 1) % len].time >
-            b->times[(j + len - 1) % len].time) {
-            if (x >= a->times[(i + len - 1) % len].time)
+    for (i = a->rear, j = b->rear, k = q.rear, n = 0; n < len -1; ++n) {
+        if (a->times[(i + len - 1) % len].time > b->times[(j + len - 1) % len].time) {
+            if (x >= a->times[(i + len - 1) % len].time) {
                 break;
-            q.times[(k + len - 1) % len].time =
-                a->times[(i + len - 1) % len].time;
-            q.times[(k + len - 1) % len].msec =
-                a->times[(i + len - 1) % len].msec;
+            }
+            q.times[(k + len - 1) % len].time = a->times[(i + len - 1) % len].time;
+            q.times[(k + len - 1) % len].msec = a->times[(i + len - 1) % len].msec;
             i = (i + len - 1) % len;
-        }
-        else {
-            if (x >= b->times[(j + len - 1) % len].time)
+
+        } else {
+            if (x >= b->times[(j + len - 1) % len].time) {
                 break;
-            q.times[(k + len - 1) % len].time =
-                b->times[(j + len - 1) % len].time;
-            q.times[(k + len - 1) % len].msec =
-                b->times[(j + len - 1) % len].msec;
+            }
+            q.times[(k + len - 1) % len].time = b->times[(j + len - 1) % len].time;
+            q.times[(k + len - 1) % len].msec = b->times[(j + len - 1) % len].msec;
             j = (j + len - 1) % len;
         }
         k = (k + len - 1) % len;
     }
-    (void)ngx_cpymem(a, &q, sizeof(q));
+    (void) ngx_cpymem(a, &q, sizeof(q));
 }
 
 /* vi:set ft=c ts=4 sw=4 et fdm=marker: */
